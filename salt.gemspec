@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     spec.add_development_dependency gem
   end
 
-  %w(git-style-binaries i18n fog).each do |gem|
+  %w(active_support trollop i18n fog).each do |gem|
     spec.add_dependency gem
   end
 

@@ -1,11 +1,19 @@
 #!/usr/bin/env ruby
+require 'trollop'
+require 'active_support'
+
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
-module ProviderHelper
-  def self.available_commands
-    %w(launch destroy)
-  end
+opts = Trollop::options do
+  opt :name,  "The name of the server", short: 'n', default: "master"
 end
 
-require 'git-style-binary/command'
+cmd = ARGV.shift
+case cmd
+when 'highstate'
+end
 
+kls = cmd.classify.constanize
+p [:k, kls]
+
+puts "Command: #{cmd}"
