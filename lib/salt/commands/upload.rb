@@ -1,5 +1,5 @@
 module Salt
-  class Upload < Base
+  class Upload < BaseCommand
     def run
     end
   end

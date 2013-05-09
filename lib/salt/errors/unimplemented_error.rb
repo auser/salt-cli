@@ -1,0 +1,2 @@
+class UnimplementedError < StandardError
+end

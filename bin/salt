@@ -1,19 +1,8 @@
 #!/usr/bin/env ruby
 require 'trollop'
-require 'active_support'
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-
-opts = Trollop::options do
-  opt :name,  "The name of the server", short: 'n', default: "master"
-end
+require 'salt'
 
 cmd = ARGV.shift
-case cmd
-when 'highstate'
-end
-
-kls = cmd.classify.constanize
-p [:k, kls]
-
-puts "Command: #{cmd}"
+Salt.run_command(cmd, ARGV)

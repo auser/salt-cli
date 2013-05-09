@@ -1,0 +1,4 @@
+aws:
+  key: /Users/auser/.vagrant.d/insecure_private_key
+  user: vagrant
+
