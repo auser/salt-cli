@@ -9,14 +9,15 @@ module Salt
         if vm.state == :running
           puts "The machine is already running. Not launching"
         else
-          provider.launch(name)
           
-          if auto_accept
-            Salt.run_provider_command(provider, "add_key")
-          end
+          if provider.launch(vm)
+            if true || auto_accept
+              Salt.run_provider_command(provider, "add_key")
+            end
           
-          if roles
-            Salt.run_provider_command(provider, "add_role", args)
+            if roles
+              Salt.run_provider_command(provider, "add_role", args)
+            end
           end
           
         end

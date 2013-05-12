@@ -5,8 +5,8 @@ module Salt
     class VagrantProvider < BaseProvider
       
       # Launch
-      def launch(name)
-        find(name).up
+      def launch(vm)
+        vm.raw.up
       end
       
       ## Find a vm named
@@ -25,7 +25,8 @@ module Salt
             user: vm.config.ssh.username,
             public_ips: Hash[vm.config.vm.networks][:hostonly],
             private_ips: Hash[vm.config.vm.networks][:private],
-            key: vm.config.ssh.private_key_path || vm.env.default_private_key_path
+            key: vm.config.ssh.private_key_path || vm.env.default_private_key_path,
+            raw: vm
           })
         end
       end
