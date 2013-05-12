@@ -5,8 +5,8 @@ module Salt
     class SSH < BaseCommand
       def run(args)
         vm = find_machine! name
-        cmd = ssh_cmd "sudo salt '#{pattern}'", vm
-        puts `#{cmd}`
+        cmd = _ssh_cmd vm
+        Kernel.exec cmd
       end
     end
   end

@@ -58,6 +58,7 @@ module Salt
         end
         x.on("-n", "--name <name>", "The name of the server") {|n| config[:name] = n}
         x.on("-i", "--ip <ip>", "The ip of the server") {|n| config[:ip] = n}
+        x.on("-d", "--debug", "Debug") {|n| config[:debug] = true}
         x.on("-u", "--user <user>", "The username") {|n| config[:user] = n}
         x.on("-k", "--key <key>", "The key for the server") {|n| config[:key] = n}
         x.on("-t", "--target <roles>", "Pattern to match") {|n| config[:pattern] = n}
@@ -81,4 +82,6 @@ require 'salt/commands/ssh'
 
 require 'salt/commands/add_key'
 require 'salt/commands/add_role'
+require 'salt/commands/command'
+require 'salt/commands/upload'
 require 'salt/commands/highstate'

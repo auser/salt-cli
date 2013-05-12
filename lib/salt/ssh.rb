@@ -2,7 +2,7 @@ module Salt
   module SSH
     
     def salt_cmd(vm, cmd)
-      salt_cmd = vm.name == "master" ? "salt '#{pattern}'" : "salt-call"
+      salt_cmd = (vm.name.to_s == "master") ? "salt '#{pattern}'" : "salt-call"
       sudo_cmd(vm, [salt_cmd, cmd].join(" "))
     end
     
@@ -14,17 +14,18 @@ module Salt
       _ssh(vm, sudo_commands)
     end
     
-    def rsync_cmd(vm, local, remote)
-      cmd = [
-        rsync_opts(vm).flatten, local_path, "#{ssh_host_port}:#{remote_path}"
-      ].flatten
-      cmd
+    def rsync_cmd(vm, local_path, remote_path)
+      [
+        rsync_opts(vm).flatten, local_path, "#{ssh_host_port(vm)}:#{remote_path}"
+      ].flatten.join(' ')
     end
     
     def ssh_cmd(vm, cmd)
-      ['ssh', ssh_opts(vm), 
-        ssh_host_port(vm), "\"#{cmd}\""
-      ].flatten.join(' ')
+      [_ssh_cmd(vm), "\"#{cmd}\""].flatten.join(' ')
+    end
+    
+    def _ssh_cmd(vm)
+      ['ssh', ssh_opts(vm), ssh_host_port(vm)].flatten.join(' ')
     end
     
     def ssh_host_port(vm)
@@ -45,7 +46,7 @@ module Salt
     def rsync_opts(vm)
       [
         "rsync", "-az",
-        "#{opts[:debug] ? "-v" : ""}",
+        "#{debug ? "-v" : ""}",
         "-e 'ssh #{ssh_opts(vm).join(' ')}'"
       ]
     end
