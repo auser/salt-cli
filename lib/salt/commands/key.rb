@@ -9,7 +9,7 @@ module Salt
           puts "Already accepted..."
         else
           if force && current_accepted_keys.include?(name)
-            delete_key!
+            delete_key!(vm)
           end
           
           if delete
