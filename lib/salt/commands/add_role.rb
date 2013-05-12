@@ -2,7 +2,7 @@ module Salt
   module Commands
     class AddRole < BaseCommand
 
-      def run(args)
+      def run(args=[])
         raise "No roles given. Please pass roles to set" unless roles
         vm = find_machine! name
         salt_cmd vm, "grains.setval roles #{roles.split(",")}"

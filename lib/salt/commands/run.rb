@@ -1,10 +1,11 @@
 module Salt
   module Commands
-    class Command < BaseCommand
+    class Run < BaseCommand
 
       def run(args=[])
         vm = find_machine! name
-        puts salt_cmd vm, "#{command}"
+        cmd = sudo_cmd(vm, ["salt-run", command].join(" "))
+        puts `#{cmd}`
       end
 
       def self.additional_options(x)
@@ -15,4 +16,4 @@ module Salt
   end
 end
 
-Salt.register_command "command", Salt::Commands::Command
+Salt.register_command "run", Salt::Commands::Run

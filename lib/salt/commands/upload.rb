@@ -1,7 +1,7 @@
 module Salt
   module Commands
     class Upload < BaseCommand
-      def run(args)
+      def run(args=[])
         vm = find_machine! name
         localpath   = local || "."
         remotepath  = remote || "/srv/salt"
@@ -11,7 +11,7 @@ module Salt
       end
       
       def self.additional_options(x)
-        x.on("-l", "--local <directory>", "Local directory") {|n| p [:n, n]; config[:local] = n}
+        x.on("-l", "--local <directory>", "Local directory") {|n| config[:local] = n}
         x.on("-r", "--remote <directory>", "Remote directory") {|n| config[:remote] = n}
       end
       

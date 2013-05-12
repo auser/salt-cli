@@ -3,20 +3,25 @@ require 'fog'
 module Salt
   module Commands
     class Launch < BaseCommand
-      def run(args)
+      def run(args=[])
         # Hash[vm.config.vm.networks][:hostonly].first,
         vm = find_machine! name
         if vm.state == :running
           puts "The machine is already running. Not launching"
         else
           
+          debug "Launching vm..."
           provider.launch(vm)
+          
           if true || auto_accept
-            Salt.run_provider_command(provider, "add_key", ["-f", "-n", name])
+            debug "Accepting the key"
+            Salt::Commands::Key.new(provider, config.merge(force: true, name: name)).run([])
+            5.times {|i| print "."; sleep 1; }
           end
         
           if roles
-            Salt.run_provider_command(provider, "add_role", ["-r", name])
+            debug "Assigning the roles #{roles.join(', ')}"
+            Salt::Commands::AddRole.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
           end
           
         end

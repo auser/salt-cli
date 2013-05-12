@@ -3,7 +3,7 @@ require 'fog'
 module Salt
   module Commands
     class List < BaseCommand
-      def run(args)
+      def run(args=[])
         str = provider.list.map do |env|
           "---- #{env.name} ----
       Host: #{env.config.ssh.host}
