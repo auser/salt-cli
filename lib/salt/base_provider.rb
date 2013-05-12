@@ -1,8 +1,13 @@
+require "salt/machine"
+
 module Salt
-  class BaseProvider
+  class BaseProvider < OpenStruct
     #### PUBLIC METHODS
-    def inventory
+    def list
       raise UnimplementedError.new("inventory")
     end
+    
   end
 end
+
+require 'salt/providers/vagrant_provider'

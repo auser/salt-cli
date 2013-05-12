@@ -1,66 +1,52 @@
 require 'ostruct'
+require 'salt/ssh'
 
 module Salt
   # Base command
   class BaseCommand < OpenStruct
+    include SSH
+    attr_reader :config, :provider
+    
+    def initialize(provider, opts={})
+      @provider = provider
+      super(opts)
+    end
 
     def run(args, opts={})
       raise "Not implemented"
     end
-
-    def ssh_cmd(cmd, opts={})
-      ['ssh', ssh_opts, "#{user || 'root'}@#{ip}", "\"#{cmd}\""].flatten.join(' ')
-    end
-
-    def ssh_opts
-      [
-        '-p', (port || 22).to_s,
-        '-o', 'LogLevel=FATAL',
-        '-o', 'StrictHostKeyChecking=no',
-        '-o', 'UserKnownHostsFile=/dev/null',
-        '-o', 'ForwardAgent=yes',
-        '-i', "'#{key || "#{ENV["HOME"]}/.ssh/id_rsa"}'"
-      ]
-    end
-
-    def _ssh(commands, &block)
-
-      [*commands].each do |command|
-        c = _ssh_cmd opts.merge(:command => "'#{command.strip}'")
-
-        dsystem(c, opts)
+    
+    # PRIVATE
+    def find_machine!(name)
+      found_provider = provider.find(name)
+      unless found_provider
+        puts <<-EOE
+        No provider with the name #{name} can be found. Check your config.
+        EOE
+      exit(1)
       end
+      found_provider
     end
-
-    def sudo_ssh(commands, opts, &blk)
-      sudo_commands = []
-      [*commands].each do |command|
-        sudo_commands << "sudo #{command.strip}"
-      end
-      _ssh(sudo_commands, opts, &blk)
+    
+    def master_server
+      find_machine! "master"
     end
-
-    def dsystem(cmd, opts={})
-      dputs "Running #{cmd}", opts
-      system(cmd)
-    end
-
+    
     def self.config
-      @config ||= {
-        pattern: '*',
-        ip: ENV["SALTMASTER"],
-        key: ENV["SALTKEY"],
-        name: "master",
-        config: load_config(File.join(Dir.pwd, "config.yml"))
-      }
+      @config ||= Salt.default_config
     end
 
-    def self.run_command(args)
+    def self.run_command(provider, args)
       op = option_parser
       additional_options(op)
       op.parse!(args)
-
-      new(config).run(args)
+      
+      provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
+      new(provider, config).run(args)
+    end
+    
+    def self.get_provider(provider_name)
+      all_providers[provider_name]
     end
 
     def self.option_parser
@@ -68,13 +54,13 @@ module Salt
         x.banner = "#{self.class}"
         x.separator ''
         x.on("-c", "--config <name>", "config") do |n| 
-          @config = load_config(n).merge(config)
+          @config.merge!(Salt.read_config(n, config).merge(config))
         end
         x.on("-n", "--name <name>", "The name of the server") {|n| config[:name] = n}
         x.on("-i", "--ip <ip>", "The ip of the server") {|n| config[:ip] = n}
         x.on("-u", "--user <user>", "The username") {|n| config[:user] = n}
         x.on("-k", "--key <key>", "The key for the server") {|n| config[:key] = n}
-        x.on("-p", "--pattern <roles>", "Pattern to match") {|n| config[:pattern] = n}
+        x.on("-t", "--target <roles>", "Pattern to match") {|n| config[:pattern] = n}
       end
     end
     def self.load_config(file)
@@ -88,3 +74,11 @@ module Salt
     end
   end
 end
+
+require 'salt/commands/list'
+require 'salt/commands/launch'
+require 'salt/commands/ssh'
+
+require 'salt/commands/add_key'
+require 'salt/commands/add_role'
+require 'salt/commands/highstate'

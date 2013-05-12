@@ -1,0 +1,2 @@
+class InvalidArgumentsError < RuntimeError
+end

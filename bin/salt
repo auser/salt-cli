@@ -4,5 +4,22 @@ require 'trollop'
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 require 'salt'
 
+# Provider
+provider = ARGV.shift
 cmd = ARGV.shift
-Salt.run_command(cmd, ARGV)
+
+if provider && cmd
+  Salt.run_provider_command(provider, cmd, ARGV)
+else
+  puts <<-EOE
+
+  Error: You must give both the provider and the command you wish to run.
+  
+  Available providers:
+  #{Salt.all_providers.map {|k,_| k }.join("\n  ")}
+  
+  Available commands
+  #{Salt.all_commands.map {|k,_| k }.join("\n  ")}
+  
+  EOE
+end

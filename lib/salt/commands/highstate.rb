@@ -1,13 +1,12 @@
 module Salt
-  class Highstate < BaseCommand
-    def run(args)
-      if name != "master"
-        cmd = "salt-call"
-      else
-        cmd = "salt '#{pattern}'"
+  module Commands
+    class Highstate < BaseCommand
+      def run(args)
+        vm = find_machine! name
+        salt_cmd vm, "state.highstate"
       end
-      cmd = ssh_cmd "sudo #{cmd} state.highstate"
-      puts `#{cmd}`
     end
   end
 end
+
+Salt.register_command "highstate", Salt::Commands::Highstate

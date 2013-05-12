@@ -1,16 +1,20 @@
 module Salt
-  class AddRole < BaseCommand
+  module Commands
+    class AddRole < BaseCommand
 
-    def run(args)
-      raise "No roles given. Please pass roles to set" unless roles
-      cmd = ssh_cmd "sudo salt '#{pattern}' grains.setval roles [#{roles}]"
-      puts `#{cmd}`
+      def run(args)
+        raise "No roles given. Please pass roles to set" unless roles
+        vm = find_machine! name
+        cmd = salt_cmd vm, "grains.setval roles #{roles}"
+        puts `#{cmd}`
+      end
+
+      def self.additional_options(x)
+        x.on("-r", "--roles <roles>", "Roles") {|n| run_options[:roles] = n}
+      end
+
     end
-
-    def self.additional_options(x)
-      x.on("-r", "--roles <roles>", "Roles") {|n| run_options[:roles] = n}
-      x.on("-p", "--pattern <roles>", "Pattern to match") {|n| run_options[:pattern] = n}
-    end
-
   end
 end
+
+Salt.register_command "add_role", Salt::Commands::AddRole
