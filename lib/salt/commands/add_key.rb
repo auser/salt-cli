@@ -17,9 +17,9 @@ module Salt
             `#{sudo_cmd vm, "restart salt-minion"}`
           end
           
-          puts sudo_cmd(master_server, "salt-key --yes -a #{name}")
+          sudo_cmd(master_server, "salt-key --yes -a #{name}")
           sleep 2
-          `#{sudo_cmd master_server, "salt-key --yes -a #{name}"}`
+          sudo_cmd master_server, "salt-key --yes -a #{name}"
         end
       end
       
