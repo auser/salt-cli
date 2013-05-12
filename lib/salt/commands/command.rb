@@ -4,7 +4,7 @@ module Salt
 
       def run(args)
         vm = find_machine! name
-        salt_cmd vm, "#{command}"
+        puts salt_cmd vm, "#{command}"
       end
 
       def self.additional_options(x)

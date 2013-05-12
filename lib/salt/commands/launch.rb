@@ -10,14 +10,13 @@ module Salt
           puts "The machine is already running. Not launching"
         else
           
-          if provider.launch(vm)
-            if true || auto_accept
-              Salt.run_provider_command(provider, "add_key")
-            end
-          
-            if roles
-              Salt.run_provider_command(provider, "add_role", args)
-            end
+          provider.launch(vm)
+          if true || auto_accept
+            Salt.run_provider_command(provider, "add_key", ["-f", "-n", name])
+          end
+        
+          if roles
+            Salt.run_provider_command(provider, "add_role", ["-r", name])
           end
           
         end

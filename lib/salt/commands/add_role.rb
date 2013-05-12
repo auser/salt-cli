@@ -5,12 +5,11 @@ module Salt
       def run(args)
         raise "No roles given. Please pass roles to set" unless roles
         vm = find_machine! name
-        cmd = salt_cmd vm, "grains.setval roles #{roles}"
-        puts `#{cmd}`
+        salt_cmd vm, "grains.setval roles #{roles}"
       end
 
       def self.additional_options(x)
-        x.on("-r", "--roles <roles>", "Roles") {|n| run_options[:roles] = n}
+        x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n}
       end
 
     end

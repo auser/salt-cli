@@ -3,7 +3,9 @@ module Salt
     
     def salt_cmd(vm, cmd)
       salt_cmd = (vm.name.to_s == "master") ? "salt '#{pattern}'" : "salt-call"
-      sudo_cmd(vm, [salt_cmd, cmd].join(" "))
+      cmd = sudo_cmd(vm, [salt_cmd, cmd].join(" "))
+      puts "Running: #{cmd}" if debug
+      `#{cmd}`
     end
     
     def sudo_cmd(vm, cmd)

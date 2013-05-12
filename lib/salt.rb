@@ -18,7 +18,7 @@ module Salt
       cmd.run_command(provider, args)
     else
       puts <<-EOE
-Unknown command!
+Unknown command: #{cmd}
 
 Available commands:
   #{Salt.all_commands.map {|k,_| k }.join("\n  ")}
