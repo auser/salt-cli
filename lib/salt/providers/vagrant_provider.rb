@@ -12,7 +12,7 @@ module Salt
       ## Find a vm named
       def find(name)
         list.select do |vm|
-          vm.name.to_s.index(name)
+          vm.name.to_s.index(name.to_s)
         end.first
       end
       

@@ -10,14 +10,21 @@ module Salt
           puts "The machine is already running. Not launching"
         else
           provider.launch(name)
-        end
-        if roles
-          Salt.run_provider_command(provider, "add_role", args)
+          
+          if auto_accept
+            Salt.run_provider_command(provider, "add_key")
+          end
+          
+          if roles
+            Salt.run_provider_command(provider, "add_role", args)
+          end
+          
         end
       end
       
       def self.additional_options(x)
         x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n.split(",")}
+        x.on("-a", "--auto_accept", "Auto accept the new role") {|n| config[:auto_accept] = true}
       end
       
     end

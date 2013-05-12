@@ -6,12 +6,8 @@ module Salt
       sudo_cmd(vm, [salt_cmd, cmd].join(" "))
     end
     
-    def sudo_cmd(vm, commands)
-      sudo_commands = []
-      [*commands].each do |command|
-        sudo_commands << "sudo #{command.strip}"
-      end
-      _ssh(vm, sudo_commands)
+    def sudo_cmd(vm, cmd)
+      ssh_cmd(vm, "sudo #{cmd}")
     end
     
     def rsync_cmd(vm, local_path, remote_path)

@@ -34,8 +34,11 @@ Available commands:
       provider: "AWS"
     }
   end
+  def self.default_config_path
+    File.expand_path("salt-config.yml", Dir.pwd)
+  end
   def self.read_config(f, opts={})
-    YAML.load(ERB.new(open(f).read).result(opts))
+    YAML::load_file(f)
   end
   def self.root_dir
     @root_dir ||= File.expand_path(Dir.pwd)

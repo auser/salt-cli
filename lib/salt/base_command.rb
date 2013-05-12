@@ -23,7 +23,7 @@ module Salt
         puts <<-EOE
         No provider with the name #{name} can be found. Check your config.
         EOE
-      exit(1)
+        exit(1)
       end
       found_provider
     end
@@ -39,6 +39,8 @@ module Salt
     def self.run_command(provider, args)
       op = option_parser
       additional_options(op)
+      
+      config.merge!(Salt.read_config(Salt.default_config_path)) if File.file?(Salt.default_config_path)
       op.parse!(args)
       
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
