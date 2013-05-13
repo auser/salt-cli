@@ -4,12 +4,12 @@ module Salt
   module Commands
     class List < BaseCommand
       def run(args=[])
-        str = provider.list.map do |env|
-          "---- #{env.name} ----
-      Host: #{env.config.ssh.host}
-      Port: #{env.config.ssh.port}
-      Key: #{env.env.default_private_key_path}
-      State: #{env.state}"
+        str = provider.list.map do |m|
+          "---- #{m.name} ----
+      Host: #{m.public_ips}
+      User: #{m.user}
+      Key: #{m.key}
+      State: #{m.state}"
         end
         puts str
       end

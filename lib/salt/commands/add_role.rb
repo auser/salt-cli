@@ -5,7 +5,7 @@ module Salt
       def run(args=[])
         raise "No roles given. Please pass roles to set" unless roles
         vm = find_machine! name
-        salt_cmd vm, "grains.setval roles #{roles.split(",")}"
+        puts salt_cmd vm, "grains.setval roles #{roles.split(",")} && restart salt-minion"
       end
 
       def self.additional_options(x)

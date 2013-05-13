@@ -49,7 +49,26 @@ module Salt
       op.parse!(args)
       
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
-      new(provider, config).run(args)
+      inst = new(provider, config)
+      if inst.validate_run!
+        inst.run(args)
+      else
+        puts <<-EOE
+Cannot run launch because:
+#{inst.errors.map {|k,v| "    #{v}" }.join("\n")}
+        EOE
+      end
+    end
+    
+    def validate_run!
+      if name != "master" && !master_server.running?
+        errors[:master_not_running] = "You have no master running. We cannot run this command"
+      end
+      errors.length == 0
+    end
+    
+    def errors
+      @errors ||= {}
     end
     
     def self.get_provider(provider_name)
@@ -65,7 +84,7 @@ module Salt
         end
         x.on("-n", "--name <name>", "The name of the server") {|n| config[:name] = n}
         x.on("-i", "--ip <ip>", "The ip of the server") {|n| config[:ip] = n}
-        x.on("-d", "--debug <level>", "Debug level") {|n| config[:debug_level] = n }
+        x.on("-d", "--debug", "Debug") {config[:debug_level] = true }
         x.on("-u", "--user <user>", "The username") {|n| config[:user] = n}
         x.on("-k", "--key <key>", "The key for the server") {|n| config[:key] = n}
         x.on("-t", "--target <roles>", "Pattern to match") {|n| config[:pattern] = n}

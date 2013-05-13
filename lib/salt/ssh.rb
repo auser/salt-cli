@@ -19,7 +19,7 @@ module Salt
     end
     
     def ssh_cmd(vm, cmd)
-      [_ssh_cmd(vm), "\"#{cmd}\""].flatten.join(' ')
+      [_ssh_cmd(vm), "\"#{cmd.gsub(/"/, '\"')}\""].flatten.join(' ')
     end
     
     def _ssh_cmd(vm)
