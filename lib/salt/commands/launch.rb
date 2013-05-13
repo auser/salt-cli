@@ -21,7 +21,7 @@ module Salt
         
           if roles
             debug "Assigning the roles #{roles.join(', ')}"
-            Salt::Commands::AddRole.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
+            Salt::Commands::Role.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
           end
           
         end

@@ -108,7 +108,7 @@ require 'salt/commands/teardown'
 require 'salt/commands/ssh'
 
 require 'salt/commands/key'
-require 'salt/commands/add_role'
+require 'salt/commands/role'
 require 'salt/commands/command'
 require 'salt/commands/run'
 require 'salt/commands/upload'

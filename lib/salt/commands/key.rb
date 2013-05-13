@@ -14,9 +14,20 @@ module Salt
           
           if delete
             delete_key!(vm)
+          elsif list
+            list_keys!
           else
             add_key!(vm)
           end
+        end
+      end
+      
+      def list_keys!
+        if current_accepted_keys.length > 0
+          puts "Accepted keys:\n  #{current_accepted_keys.join("\n  ")}"
+        end
+        if currently_pending_keys.length > 0
+          puts "Pending keys:\n  #{currently_pending_keys.join("\n  ")}"
         end
       end
       
@@ -48,6 +59,7 @@ module Salt
       def self.additional_options(x)
         x.on('-f', "--force", "Force update key") {|n| config[:force] = true}
         x.on('--delete', "Delete the key") {|n| config[:delete] = true }
+        x.on('-l', '--list', "List keys") {config[:list] = true }
       end
 
     end
