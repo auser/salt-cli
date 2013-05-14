@@ -1,5 +1,6 @@
 $:.unshift(File.dirname(__FILE__))
 require 'active_support/core_ext'
+require 'active_support/core_ext/hash'
 require 'fog'
 require 'yaml'
 require 'pp'
@@ -8,6 +9,8 @@ require 'optparse'
 require "salt/version"
 require 'salt/errors/unimplemented_error'
 require 'salt/errors/invalid_arguments_error'
+
+require 'salt/core/hash'
 
 environment = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || ENV['NODE_ENV'] || 'development'
 

@@ -2,7 +2,7 @@ module Salt
   module Commands
     class Highstate < BaseCommand
       def run(args=[])
-        vm = find_machine! name
+        vm = find name
         salt_cmd vm, "state.highstate"
       end
     end

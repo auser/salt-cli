@@ -4,7 +4,7 @@ module Salt
 
       def run(args=[])
         master = master_server
-        vm = find_machine! name
+        vm = find name
         if !delete && current_accepted_keys.include?(name) && !force
           puts "Already accepted..."
         else

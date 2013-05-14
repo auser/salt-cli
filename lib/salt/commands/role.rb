@@ -3,17 +3,22 @@ module Salt
     class Role < BaseCommand
 
       def run(args=[])
-        raise "No roles given. Please pass roles to set" unless roles
         if list
-          puts current_roles
+          current_roles.each do |name, hsh|
+            puts "Server: #{name}"
+            if hsh && hsh.has_key?("roles")
+              puts "  roles: #{hsh['roles']}"
+            end
+          end
         else
-          vm = find_machine! name
-          puts salt_cmd vm, "grains.setval roles #{roles.split(",")} && restart salt-minion"
+          raise "No roles given. Please pass roles to set" unless roles
+          vm = find name
+          puts salt_cmd vm, "grains.setval roles #{roles.split(",")} && sudo restart salt-minion"
         end
       end
       
       def current_roles
-        @current_roles ||= `#{sudo_cmd(master_server, "grains.item roles")}`.split("\n")[1..-1]
+        @current_roles ||= YAML.load(`#{sudo_cmd(master_server, "salt '*' grains.item roles")}`)
       end
 
       def self.additional_options(x)

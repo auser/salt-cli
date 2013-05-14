@@ -11,3 +11,4 @@ module Salt
 end
 
 require 'salt/providers/vagrant_provider'
+require 'salt/providers/aws_provider'

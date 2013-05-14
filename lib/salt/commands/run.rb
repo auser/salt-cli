@@ -3,7 +3,7 @@ module Salt
     class Run < BaseCommand
 
       def run(args=[])
-        vm = find_machine! name
+        vm = find name
         cmd = sudo_cmd(vm, ["salt-run", command].join(" "))
         puts `#{cmd}`
       end

@@ -4,8 +4,9 @@ module Salt
   module Commands
     class SSH < BaseCommand
       def run(args=[])
-        vm = find_machine! name
+        vm = find name
         cmd = _ssh_cmd vm
+        puts "#{cmd}" if debug_level
         Kernel.exec cmd
       end
     end

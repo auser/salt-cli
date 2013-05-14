@@ -22,19 +22,12 @@ module Salt
     end
     
     # PRIVATE
-    def find_machine!(name)
-      found_provider = provider.find(name)
-      unless found_provider
-        puts <<-EOE
-        No provider with the name #{name} can be found. Check your config.
-        EOE
-        exit(1)
-      end
-      found_provider
+    def find(name)
+      provider.find(name)
     end
     
     def master_server
-      find_machine! "master"
+      find "master"
     end
     
     def self.config
@@ -48,6 +41,7 @@ module Salt
       config.merge!(Salt.read_config(Salt.default_config_path)) if File.file?(Salt.default_config_path)
       op.parse!(args)
       
+      config.recursive_symbolize_keys!
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
       inst = new(provider, config)
       if inst.validate_run!

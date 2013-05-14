@@ -6,7 +6,16 @@ module Salt
       
       # Launch
       def launch(vm)
-        vm.raw.up
+        vm = find name
+        if vm.state == :running
+          puts "The machine is already running. Not launching"
+        else
+          vm.raw.up
+        end
+      end
+      
+      def teardown(vm)
+        vm.raw.destroy
       end
       
       ## Find a vm named
@@ -14,6 +23,9 @@ module Salt
         list.select do |vm|
           vm.name.to_s.index(name.to_s)
         end.first
+      end
+      def find(name)
+        find(name)
       end
       
       ## List of the vm objects

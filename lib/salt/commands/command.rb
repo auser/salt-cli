@@ -3,7 +3,7 @@ module Salt
     class Command < BaseCommand
 
       def run(args=[])
-        vm = find_machine! name
+        vm = find name
         puts salt_cmd vm, "#{command}"
       end
 

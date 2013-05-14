@@ -4,10 +4,10 @@ module Salt
   module Commands
     class Teardown < BaseCommand
       def run(args=[])
-        vm = find_machine! name
+        vm = find name
         if vm.state == :running
           Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
-          vm.raw.destroy
+          provider.teardown(vm)
         else
           puts "Not running"
         end

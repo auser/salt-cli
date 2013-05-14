@@ -4,26 +4,19 @@ module Salt
   module Commands
     class Launch < BaseCommand
       def run(args=[])
-        # Hash[vm.config.vm.networks][:hostonly].first,
-        vm = find_machine! name
-        if vm.state == :running
-          puts "The machine is already running. Not launching"
-        else
-          
-          debug "Launching vm..."
-          provider.launch(vm)
-          
-          if true || auto_accept
-            debug "Accepting the key"
-            Salt::Commands::Key.new(provider, config.merge(force: true, name: name)).run([])
-            5.times {|i| print "."; sleep 1; }
-          end
+        debug "Launching vm..."
+        provider.launch(vm)
         
-          if roles
-            debug "Assigning the roles #{roles.join(', ')}"
-            Salt::Commands::Role.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
-          end
-          
+        return if name == "master"
+        if true || auto_accept
+          debug "Accepting the key"
+          Salt::Commands::Key.new(provider, config.merge(force: true, name: name)).run([])
+          5.times {|i| print "."; sleep 1; }
+        end
+      
+        if roles
+          debug "Assigning the roles #{roles.join(', ')}"
+          Salt::Commands::Role.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
         end
       end
       

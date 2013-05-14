@@ -2,12 +2,11 @@ module Salt
   module Commands
     class Upload < BaseCommand
       def run(args=[])
-        vm = find_machine! name
-        localpath   = local || "."
+        vm = find name
+        localpath   = local || File.join(Dir.pwd, "deploy", "salt")
         remotepath  = remote || "/srv/salt"
-        cmd = rsync_cmd vm, localpath, remotepath
-        puts cmd
-        puts `#{cmd}`
+        system sudo_cmd(vm, "sudo mkdir -p #{remotepath} && sudo chown #{user} #{remotepath}")
+        system rsync_cmd(vm, localpath, remotepath)
       end
       
       def self.additional_options(x)
