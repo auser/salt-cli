@@ -3,6 +3,7 @@ module Salt
     class Command < BaseCommand
 
       def run(args=[])
+        require_master_server!
         vm = find name
         puts salt_cmd vm, "#{command}"
       end

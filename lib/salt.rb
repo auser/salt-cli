@@ -34,7 +34,8 @@ Available commands:
       ip: ENV["SALTMASTER"],
       key: ENV["SALTKEY"],
       name: "master",
-      provider: "AWS"
+      provider: "AWS",
+      env: ENV["ENVIRONMENT"] || "development"
     }
   end
   def self.default_config_path
@@ -50,7 +51,7 @@ Available commands:
     @salt_dir ||= File.join(root_dir, "salt")
   end
   def self.bootstrap_dir
-    @bootstrap_dir ||= File.join(salt_dir, "bootstrap")
+    @bootstrap_dir ||= File.join(File.dirname(__FILE__), "salt", "bootstrap")
   end
   def self.get_command(name)
     all_commands[name]

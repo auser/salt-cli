@@ -11,6 +11,7 @@ module Salt
           puts "The machine is already running. Not launching"
         else
           vm.raw.up
+          reset!
         end
       end
       
@@ -23,9 +24,6 @@ module Salt
         list.select do |vm|
           vm.name.to_s.index(name.to_s)
         end.first
-      end
-      def find(name)
-        find(name)
       end
       
       ## List of the vm objects
@@ -45,6 +43,9 @@ module Salt
       
       ###### PRIVATE
       private
+      def reset!
+        @list = nil
+      end
       def env
         @env = ::Vagrant::Environment.new
       end

@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'highline/import'
 require 'salt/ssh'
 
 module Salt
@@ -28,6 +29,29 @@ module Salt
     
     def master_server
       find "master"
+    end
+    
+    # Some commands require that a master server is running and live
+    # this is how salt denotes it
+    def require_master_server!
+      unless master_server && master_server.running?
+        p [:master_not_running, master_server.running?, master_server.state]
+        puts "This command needs a saltmaster running in order to function and 
+    one cannot be found. Please check your configuration if you have a master
+    defined. If you believe you received this message in error, let us know
+    on the issues page."
+        exit(1)
+      end
+    end
+    
+    ## Some commands we should require confirmation
+    def require_confirmation!(msg="", &block)
+      answer = ask("#{msg} [yn]") do |q|
+        q.echo = false
+        q.character = true
+        q.validate = /\A[yn]\Z/
+      end
+      exit(0) if answer.index('n')
     end
     
     def self.config
@@ -82,6 +106,7 @@ Cannot run launch because:
         x.on("-u", "--user <user>", "The username") {|n| config[:user] = n}
         x.on("-k", "--key <key>", "The key for the server") {|n| config[:key] = n}
         x.on("-t", "--target <roles>", "Pattern to match") {|n| config[:pattern] = n}
+        x.on("-e", "--environment <env>", "Environment") {|n| config[:env] = n}
       end
     end
     def self.load_config(file)
@@ -98,6 +123,7 @@ end
 
 require 'salt/commands/list'
 require 'salt/commands/launch'
+require 'salt/commands/bootstrap'
 require 'salt/commands/teardown'
 require 'salt/commands/ssh'
 

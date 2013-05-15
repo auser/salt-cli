@@ -7,13 +7,25 @@ module Salt
         debug "Launching vm..."
         provider.launch(vm)
         
-        return if name == "master"
+        if name == "master"
+          run_after_launch_master
+        else
+          run_after_launch_non_master
+        end
+      end
+      
+      def run_after_launch_master
+        Salt::Commands::Upload.new(provider, config).run([])
+        Salt::Commands::Bootstrap.new(provider, config).run([])
+      end
+      
+      def run_after_launch_non_master
         if true || auto_accept
           debug "Accepting the key"
           Salt::Commands::Key.new(provider, config.merge(force: true, name: name)).run([])
           5.times {|i| print "."; sleep 1; }
         end
-      
+    
         if roles
           debug "Assigning the roles #{roles.join(', ')}"
           Salt::Commands::Role.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])

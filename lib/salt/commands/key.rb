@@ -3,7 +3,8 @@ module Salt
     class Key < BaseCommand
 
       def run(args=[])
-        master = master_server
+        require_master_server!
+        
         vm = find name
         if !delete && current_accepted_keys.include?(name) && !force
           puts "Already accepted..."

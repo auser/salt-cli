@@ -3,6 +3,7 @@ module Salt
     class Role < BaseCommand
 
       def run(args=[])
+        require_master_server!
         if list
           current_roles.each do |name, hsh|
             puts "Server: #{name}"

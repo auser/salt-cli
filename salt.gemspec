@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     spec.add_development_dependency gem
   end
 
-  %w(vagrant multi_json active_support trollop i18n fog).each do |gem|
+  %w(vagrant multi_json active_support highline trollop i18n fog).each do |gem|
     spec.add_dependency gem
   end
   

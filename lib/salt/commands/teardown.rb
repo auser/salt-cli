@@ -6,6 +6,10 @@ module Salt
       def run(args=[])
         vm = find name
         if vm.state == :running
+          require_confirmation! <<-EOE
+          Are you sure you want to teardown the machine #{name}.
+          This <%= color('cannot', RED) %> be undone
+          EOE
           Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
           provider.teardown(vm)
         else

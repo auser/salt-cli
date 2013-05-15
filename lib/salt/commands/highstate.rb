@@ -2,6 +2,7 @@ module Salt
   module Commands
     class Highstate < BaseCommand
       def run(args=[])
+        require_master_server!
         vm = find name
         salt_cmd vm, "state.highstate"
       end

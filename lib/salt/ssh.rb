@@ -14,7 +14,7 @@ module Salt
     
     def rsync_cmd(vm, local_path, remote_path)
       [
-        rsync_opts(vm).flatten, "#{local_path}/", "#{ssh_host_port(vm)}:#{remote_path}"
+        rsync_opts(vm).flatten, "#{local_path}", "#{ssh_host_port(vm)}:#{remote_path}"
       ].flatten.join(' ')
     end
     
