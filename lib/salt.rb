@@ -35,7 +35,7 @@ Available commands:
       key: ENV["SALTKEY"],
       name: "master",
       provider: "AWS",
-      env: ENV["ENVIRONMENT"] || "development"
+      environment: ENV["ENVIRONMENT"] || "development"
     }
   end
   def self.default_config_path

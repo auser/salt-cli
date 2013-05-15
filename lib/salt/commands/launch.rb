@@ -6,6 +6,7 @@ module Salt
       def run(args=[])
         debug "Launching vm..."
         provider.launch(vm)
+        Salt::Commands::Bootstrap.new(provider, config).run([])
         
         if name == "master"
           run_after_launch_master
@@ -16,7 +17,6 @@ module Salt
       
       def run_after_launch_master
         Salt::Commands::Upload.new(provider, config).run([])
-        Salt::Commands::Bootstrap.new(provider, config).run([])
       end
       
       def run_after_launch_non_master

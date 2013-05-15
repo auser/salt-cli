@@ -106,7 +106,7 @@ Cannot run launch because:
         x.on("-u", "--user <user>", "The username") {|n| config[:user] = n}
         x.on("-k", "--key <key>", "The key for the server") {|n| config[:key] = n}
         x.on("-t", "--target <roles>", "Pattern to match") {|n| config[:pattern] = n}
-        x.on("-e", "--environment <env>", "Environment") {|n| config[:env] = n}
+        x.on("-e", "--environment <env>", "Environment") {|n| config[:environment] = n}
       end
     end
     def self.load_config(file)

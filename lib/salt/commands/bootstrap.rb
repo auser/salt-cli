@@ -10,9 +10,9 @@ module Salt
         system rsync_cmd(vm, localpath, remotepath)
         
         if name == "master" 
-          cmd = "sudo /bin/sh #{remotepath} #{env}"
+          cmd = "sudo /bin/sh #{remotepath} #{environment}"
         else 
-          cmd = "sudo /bin/sh #{remotepath} #{name} #{master_server.ip} #{env}"
+          cmd = "sudo /bin/sh #{remotepath} #{name} #{master_server.ip} #{environment}"
         end
         
         IO.popen(sudo_cmd(vm, cmd)) do |d|
