@@ -34,6 +34,7 @@ module Salt
       
       def self.additional_options(x)
         x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n.split(",")}
+        x.on('-p', '--ports <ports>', "Port to open up (if necessary)") {|n| config[:ports] = n.split(",")}
         x.on("-a", "--auto_accept", "Auto accept the new role") {|n| config[:auto_accept] = true}
       end
       

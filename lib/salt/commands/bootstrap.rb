@@ -12,7 +12,7 @@ module Salt
         if name == "master" 
           cmd = "sudo /bin/sh #{remotepath} #{environment}"
         else 
-          cmd = "sudo /bin/sh #{remotepath} #{name} #{master_server.ip} #{environment}"
+          cmd = "sudo /bin/sh #{remotepath} #{name} #{master_server.preferred_ip} #{environment}"
         end
         
         IO.popen(sudo_cmd(vm, cmd)) do |d|

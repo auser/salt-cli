@@ -68,20 +68,10 @@ module Salt
       config.recursive_symbolize_keys!
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
       inst = new(provider, config)
-      if inst.validate_run!
-        inst.run(args)
-      else
-        puts <<-EOE
-Cannot run launch because:
-#{inst.errors.map {|k,v| "    #{v}" }.join("\n")}
-        EOE
-      end
+      inst.run(args) if inst.validate_run!
     end
     
     def validate_run!
-      if name != "master" && !master_server.running?
-        errors[:master_not_running] = "You have no master running. We cannot run this command"
-      end
       errors.length == 0
     end
     

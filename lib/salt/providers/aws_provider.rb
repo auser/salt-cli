@@ -6,13 +6,24 @@ module Salt
       
       # Launch
       def launch(vm)
+        unless security_group
+          create_security_group! do |group|
+            group.authorize_port_range(22..22)
+            group.authorize_port_range(4505..4506)
+            (ports || []).each do |port|
+              group.authorize_port_range(port..port)
+            end
+          end
+        end
         opts = {
           username: 'ubuntu',
           private_key_path: build_keypath,
           public_key_path: "#{build_keypath}.pub",
-          tags: {name: name},
+          tags: {name: name, environment: environment},
+          security_groups: [security_group.name]
         }
         compute.servers.bootstrap(opts)
+        ## Need to support private ips on ec2
       end
       
       def teardown(vm)
@@ -22,7 +33,7 @@ module Salt
       ## Find a vm named
       def find(name)
         list.select do |vm|
-          vm.name.to_s.index(name.to_s)
+          vm.name.to_s.index(name.to_s) && vm.running?
         end.first
       end
       
@@ -33,8 +44,10 @@ module Salt
             state: vm.state.to_sym,
             name: vm.tags["name"],
             user: user,
-            public_ips: [vm.public_ip_address],
-            private_ips: [vm.private_ip_address],
+            dns: vm.dns_name,
+            public_ip: vm.public_ip_address,
+            private_ip: vm.private_ip_address,
+            preferred_ip: vm.private_ip_address,
             key: build_keypath,
             raw: vm
           })
@@ -48,6 +61,15 @@ module Salt
       end
       def raw_list
         compute.servers
+      end
+      def security_group
+        @security_group ||= compute.security_groups.get("#{environment}-#{aws[:keyname]}")
+      end
+      def create_security_group!(&block)
+        group = compute.security_groups.new({name: "#{environment}-#{aws[:keyname]}",
+                                    description: "#{environment} group for #{aws[:keyname]}"})
+        group.save
+        yield(group) if block_given?
       end
       def compute
         Fog.credential = aws[:keyname] if aws.has_key?(:keyname)

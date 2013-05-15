@@ -27,7 +27,7 @@ module Salt
     end
     
     def ssh_host_port(vm)
-      "#{vm.user || 'root'}@#{vm.public_ips[0]}"
+      "#{vm.user || 'root'}@#{vm.public_ip}"
     end
 
     def ssh_opts(vm)
