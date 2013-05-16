@@ -4,12 +4,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'salt/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "salt"
+  spec.name          = "salt-cli"
   spec.version       = Salt::VERSION
   spec.authors       = ["Ari Lerner"]
   spec.email         = ["arilerner@mac.com"]
   spec.description   = %q{A ruby gem for interacting with salt and a bunch of providers}
-  spec.summary       = %q{}
+  spec.summary       = %q{A ruby gem for interacting with salt and providers, including vagrant and salt}
   spec.homepage      = ""
   spec.license       = "MIT"
 
