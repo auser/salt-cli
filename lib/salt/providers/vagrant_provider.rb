@@ -33,9 +33,9 @@ module Salt
             state: vm.state,
             name: vm.name,
             user: vm.config.ssh.username,
-            public_ip: Hash[vm.config.vm.networks][:hostonly],
+            public_ip: Hash[vm.config.vm.networks][:hostonly].first,
             private_ip: Hash[vm.config.vm.networks][:private],
-            preferred_ip: Hash[vm.config.vm.networks][:hostonly],
+            preferred_ip: Hash[vm.config.vm.networks][:hostonly].first,
             key: vm.config.ssh.private_key_path || vm.env.default_private_key_path,
             raw: vm
           })

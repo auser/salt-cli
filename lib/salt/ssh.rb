@@ -57,6 +57,11 @@ module Salt
         system(c)
       end
     end
+    
+    def dsystem(cmd)
+      puts "Running: #{cmd}" if debug_level
+      system(cmd)
+    end
 
   end
 end
