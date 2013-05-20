@@ -5,6 +5,10 @@ module Salt
     class Teardown < BaseCommand
       def run(args=[])
         vm = find name
+        unless vm
+          puts "Machine not found or not running: #{name}"
+          return
+        end
         if vm.state == :running
           require_confirmation! <<-EOE
           Are you sure you want to teardown the machine #{name}.

@@ -14,7 +14,7 @@ module Salt
         else
           raise "No roles given. Please pass roles to set" unless roles
           vm = find name
-          puts salt_cmd(vm, "grains.setval roles #{roles.split(",")} && sudo restart salt-minion")
+          puts salt_cmd(vm, "grains.setval roles \"[#{roles}]\" && sudo restart salt-minion")
         end
       end
       
