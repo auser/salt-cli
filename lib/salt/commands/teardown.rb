@@ -16,6 +16,7 @@ module Salt
           EOE
           Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
           provider.teardown(vm)
+          salt_cmd master_server, 'data.clear'
         else
           puts "Not running"
         end
