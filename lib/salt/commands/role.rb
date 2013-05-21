@@ -4,11 +4,19 @@ module Salt
 
       def run(args=[])
         require_master_server!
+        
         if list
-          current_roles.each do |name, hsh|
-            puts "Server: #{name}"
-            if hsh && hsh.has_key?("roles")
-              puts "  roles: #{hsh['roles']}"
+          if available_roles
+            puts "Available roles:"
+            available_roles.each do |name|
+              puts "  #{name}"
+            end
+          else
+            current_roles.each do |name, hsh|
+              puts "Server: #{name}"
+              if hsh && hsh.has_key?("roles")
+                puts "  roles: #{hsh['roles']}"
+              end
             end
           end
         else
@@ -18,11 +26,16 @@ module Salt
         end
       end
       
+      def available_roles
+        Dir["#{Salt.salt_dir}/pillar/roles/*.sls"].map {|f| File.basename(f, File.extname(f)) }
+      end
+      
       def current_roles
         @current_roles ||= YAML.load(`#{sudo_cmd(master_server, "salt '*' grains.item roles")}`)
       end
 
       def self.additional_options(x)
+        x.on('-a', '--available', "List the available roles") { config[:available] = true}
         x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n}
         x.on('-l', '--list', "List keys") {config[:list] = true }
       end

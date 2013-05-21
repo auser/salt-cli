@@ -45,7 +45,7 @@ Available commands:
     YAML::load_file(f)
   end
   def self.root_dir
-    @root_dir ||= File.expand_path(Dir.pwd)
+    @root_dir ||= File.expand_path(File.join(Dir.pwd, "deploy"))
   end
   def self.salt_dir
     @salt_dir ||= File.join(root_dir, "salt")
