@@ -4,12 +4,12 @@ module Salt
 
       def run(args=[])
         vm = find name
-        bname = name == "master" ? "master" : "minion"
+        bname = name == "#{environment}-master" ? "master" : "minion"
         localpath = File.join(Salt.bootstrap_dir, "#{bname}.sh")
         remotepath = "/tmp/#{bname}.sh"
         system rsync_cmd(vm, localpath, remotepath)
         
-        if name == "master" 
+        if name == "#{environment}-master" 
           cmd = "sudo /bin/sh #{remotepath} #{environment}"
         else 
           cmd = "sudo /bin/sh #{remotepath} #{name} #{master_server.preferred_ip} #{environment}"

@@ -8,7 +8,7 @@ module Salt
         provider.launch(vm)
         Salt::Commands::Bootstrap.new(provider, config).run([])
         
-        if name == "master"
+        if name == "#{environment}-master"
           run_after_launch_master
         else
           run_after_launch_non_master

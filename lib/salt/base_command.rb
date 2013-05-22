@@ -28,14 +28,13 @@ module Salt
     end
     
     def master_server
-      find "master"
+      find "#{environment}-master"
     end
     
     # Some commands require that a master server is running and live
     # this is how salt denotes it
     def require_master_server!
       unless master_server && master_server.running?
-        p [:master_not_running, master_server.running?, master_server.state]
         puts "This command needs a saltmaster running in order to function and 
     one cannot be found. Please check your configuration if you have a master
     defined. If you believe you received this message in error, let us know
@@ -66,9 +65,17 @@ module Salt
       op.parse!(args)
       
       config.recursive_symbolize_keys!
+      
+      config[:name] = generate_name(config)
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
       inst = new(provider, config)
       inst.run(args) if inst.validate_run!
+    end
+    
+    def self.generate_name(config={})
+      name = config[:name] || 'master'
+      env = config[:environment] || 'development'
+      "#{env}-#{name}"
     end
     
     def validate_run!
