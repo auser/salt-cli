@@ -2,7 +2,7 @@ module Salt
   module SSH
     
     def salt_cmd(vm, cmd)
-      salt_cmd = (vm.name.to_s == "master") ? "salt '#{pattern}'" : "salt-call"
+      salt_cmd = (vm.name.to_s == "#{environment}-master") ? "salt '#{pattern}'" : "salt-call"
       cmd = sudo_cmd(vm, [salt_cmd, cmd].join(" "))
       puts "Running: #{cmd}" if debug_level
       `#{cmd}`

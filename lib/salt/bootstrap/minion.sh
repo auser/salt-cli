@@ -1,8 +1,9 @@
 #!/bin/bash
 
-HOSTNAME=${1:-minion}
-SALT_MASTER=${2:-192.168.98.11}
-ENV=${3:-development}
+LOC=${1:-vagrant}
+HOSTNAME=${2:-minion}
+SALT_MASTER=${3:-192.168.98.11}
+ENV=${4:-development}
 
 echo "------> Bootstrapping minion $HOSTNAME (master: $SALT_MASTER) for environment $ENV"
 
@@ -35,6 +36,7 @@ master: saltmaster
 id: $HOSTNAME
 grains:
   environment: $ENV
+  location: $LOC
 """ > /etc/salt/minion
 
 sudo /etc/init.d/salt-minion restart

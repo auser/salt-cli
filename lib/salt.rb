@@ -29,13 +29,14 @@ Available commands:
     end
   end
   def self.default_config
+    env = ENV['ENVIRONMENT'] || 'development'
     @config ||= {
       pattern: '*',
       ip: ENV["SALTMASTER"],
       key: ENV["SALTKEY"],
       name: "master",
       provider: "AWS",
-      environment: ENV["ENVIRONMENT"] || "development"
+      environment: env
     }
   end
   def self.default_config_path

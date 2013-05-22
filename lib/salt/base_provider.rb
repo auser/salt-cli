@@ -7,6 +7,10 @@ module Salt
       raise UnimplementedError.new("inventory")
     end
     
+    def to_s
+      self.class.to_s.split("::")[-1].downcase
+    end
+    
   end
 end
 

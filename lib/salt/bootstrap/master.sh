@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ENV=${1:-development}
+LOC=${1:-vagrant}
+ENV=${2:-development}
 
 echo "------> Bootstrapping master for environment $ENV"
 
@@ -65,6 +66,7 @@ grains:
   roles: 
     - master
   environment: $ENV
+  location: $LOC
 """ > /etc/salt/master
 
 
@@ -76,6 +78,7 @@ id: saltmaster
 
 grains:
   environment: $ENV
+  location: $LOC
   roles: 
     - master
 
