@@ -4,8 +4,7 @@ module Salt
     def salt_cmd(vm, cmd)
       salt_cmd = (vm.name.to_s == "#{environment}-master") ? "salt '#{pattern}'" : "salt-call"
       cmd = sudo_cmd(vm, [salt_cmd, cmd].join(" "))
-      puts "Running: #{cmd}" if debug_level
-      `#{cmd}`
+      dsystem(cmd)
     end
     
     def sudo_cmd(vm, cmd)
@@ -59,8 +58,16 @@ module Salt
     end
     
     def dsystem(cmd)
-      puts "Running: #{cmd}" if debug_level
-      system(cmd)
+      if debug_level
+        puts "Running: #{cmd}"
+        IO.popen(cmd,:err => [:child, :out]) do |d|
+          while line = d.gets
+            puts line
+          end
+        end
+      else
+        system(cmd)
+      end
     end
 
   end
