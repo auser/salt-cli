@@ -34,27 +34,27 @@ module Salt
       
       def add_key!(vm)
         if current_accepted_keys.include?(name)
-          puts `#{sudo_cmd master_server, "echo 'y' | sudo salt-key -d #{vm.name}"}`
+          dsystem("#{sudo_cmd master_server, "echo 'y' | sudo salt-key -d #{vm.name}"}")
         end
         
         unless currently_pending_keys.include?(name)
-          puts `#{sudo_cmd vm, "restart salt-minion"}`
+          dsystem("#{sudo_cmd vm, "restart salt-minion"}")
         end
         
         10.times {|i| print "."; sleep 1; }
-        puts `#{sudo_cmd(master_server, "echo 'y' | sudo salt-key -a #{vm.name}")}`
+        puts dsystem("#{sudo_cmd(master_server, "echo 'y' | sudo salt-key -a #{vm.name}")}")
       end
       
       def delete_key!(vm)
-        `#{sudo_cmd(master_server, "echo 'y' | sudo salt-key -d #{vm.name}")}`
+        dsystem("#{sudo_cmd(master_server, "echo 'y' | sudo salt-key -d #{vm.name}")}")
       end
       
       def current_accepted_keys
-        @current_accepted_keys ||= `#{sudo_cmd(master_server, "salt-key -l accepted")}`.split("\n")[1..-1]
+        @current_accepted_keys ||= dsystem("#{sudo_cmd(master_server, "salt-key -l accepted")}").split("\n")[1..-1]
       end
       
       def currently_pending_keys
-        currently_pending_keys ||= `#{sudo_cmd(master_server, "salt-key -l pre")}`.split("\n")[1..-1]
+        currently_pending_keys ||= dsystem("#{sudo_cmd(master_server, "salt-key -l pre")}").split("\n")[1..-1]
       end
 
       def self.additional_options(x)

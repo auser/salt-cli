@@ -53,7 +53,7 @@ module Salt
       [*commands].each do |command|
         c = ssh_cmd vm, "#{command.strip.gsub(/"/, '')}"
         
-        system(c)
+        dsystem(c)
       end
     end
     

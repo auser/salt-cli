@@ -6,7 +6,7 @@ module Salt
         require_master_server!
         vm = find name
         cmd = sudo_cmd(vm, ["salt-run", command].join(" "))
-        puts `#{cmd}`
+        puts dsystem(cmd)
       end
 
       def self.additional_options(x)
