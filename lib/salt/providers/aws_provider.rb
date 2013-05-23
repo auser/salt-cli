@@ -10,9 +10,6 @@ module Salt
           create_security_group! do |group|
             group.authorize_port_range(22..22)
             group.authorize_port_range(4505..4506)
-            (to_open_ports || []).each do |port|
-              group.authorize_port_range(port..port)
-            end
           end
         end
         
@@ -20,6 +17,7 @@ module Salt
         to_open_ports.each do |port|
           security_group.authorize_port_range(Range.new(port, port)) unless current_open_ports.include?(port)
         end
+        
         opts = {
           username: 'ubuntu',
           private_key_path: build_keypath,
@@ -27,6 +25,9 @@ module Salt
           tags: {name: name, environment: environment},
           security_groups: [security_group.name]
         }
+        
+        puts "launching.."
+        p opts
         compute.servers.bootstrap(opts)
         ## Need to support private ips on ec2
       end
