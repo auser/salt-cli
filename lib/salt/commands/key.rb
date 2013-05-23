@@ -42,7 +42,7 @@ module Salt
         end
         
         10.times {|i| print "."; sleep 1; }
-        puts dsystem("#{sudo_cmd(master_server, "echo 'y' | sudo salt-key -a #{vm.name}")}")
+        dsystem("#{sudo_cmd(master_server, "echo 'y' | sudo salt-key -a #{vm.name}")}")
       end
       
       def delete_key!(vm)
