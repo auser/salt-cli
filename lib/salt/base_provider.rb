@@ -2,6 +2,14 @@ require "salt/machine"
 
 module Salt
   class BaseProvider < OpenStruct
+    
+    attr_reader :config
+    
+    def initialize(opts={})
+      @config = opts
+      super(opts)
+    end
+    
     #### PUBLIC METHODS
     def list
       raise UnimplementedError.new("inventory")

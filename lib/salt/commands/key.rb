@@ -50,11 +50,11 @@ module Salt
       end
       
       def current_accepted_keys
-        @current_accepted_keys ||= dsystem("#{sudo_cmd(master_server, "salt-key -l accepted")}").split("\n")[1..-1]
+        @current_accepted_keys ||= `#{sudo_cmd(master_server, "salt-key -l accepted")}`.split("\n")[1..-1]
       end
       
       def currently_pending_keys
-        currently_pending_keys ||= dsystem("#{sudo_cmd(master_server, "salt-key -l pre")}").split("\n")[1..-1]
+        currently_pending_keys ||= `#{sudo_cmd(master_server, "salt-key -l pre")}`.split("\n")[1..-1]
       end
 
       def self.additional_options(x)

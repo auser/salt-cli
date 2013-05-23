@@ -10,10 +10,15 @@ module Salt
           create_security_group! do |group|
             group.authorize_port_range(22..22)
             group.authorize_port_range(4505..4506)
-            (ports || []).each do |port|
+            (to_open_ports || []).each do |port|
               group.authorize_port_range(port..port)
             end
           end
+        end
+        
+        ## Open any ports if necessary
+        to_open_ports.each do |port|
+          security_group.authorize_port_range(Range.new(port, port)) unless current_open_ports.include?(port)
         end
         opts = {
           username: 'ubuntu',
@@ -63,13 +68,32 @@ module Salt
         compute.servers
       end
       def security_group
-        @security_group ||= compute.security_groups.get("#{environment}-#{aws[:keyname]}")
+        @security_group ||= compute.security_groups.get("#{name}-#{aws[:keyname]}")
+      end
+      ### Just a small helper to compute the available ports
+      def current_open_ports
+        tcp_ports = []
+        security_group.ip_permissions.each do |hsh|
+          proto, from, to = hsh['ipProtocol'], hsh['fromPort'], hsh['toPort']
+          tcp_ports.push Range.new(from, to).to_a
+        end
+        tcp_ports.flatten
       end
       def create_security_group!(&block)
-        group = compute.security_groups.new({name: "#{environment}-#{aws[:keyname]}",
-                                    description: "#{environment} group for #{aws[:keyname]}"})
+        group = compute.security_groups.new({name: "#{name}-#{aws[:keyname]}",
+                                    description: "#{name} group for #{aws[:keyname]}"})
         group.save
         yield(group) if block_given?
+      end
+      def to_open_ports
+        all_ports = []
+        all_ports << machine_config[:default][:ports].flatten if machine_config.has_key?(:default)
+        real_name = name.split('-')[-1].to_sym
+        all_ports << machine_config[real_name][:ports].flatten if machine_config.has_key?(real_name)
+        all_ports.flatten
+      end
+      def machine_config
+        @machine_config ||= config[:aws][:machines] || {}
       end
       def compute
         Fog.credential = aws[:keyname] if aws.has_key?(:keyname)

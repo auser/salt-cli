@@ -8,6 +8,7 @@ module Salt
         remotepath  = remote || "/srv/salt"
         dsystem sudo_cmd(vm, "sudo mkdir -p #{remotepath} && sudo chown #{vm.user} #{remotepath}")
         dsystem rsync_cmd(vm, localpath, remotepath)
+        salt_cmd vm, 'saltutil.sync_all'
       end
       
       def self.additional_options(x)
