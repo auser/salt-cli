@@ -14,9 +14,11 @@ module Salt
           Are you sure you want to teardown the machine #{name}.
           This <%= color('cannot', RED) %> be undone
           EOE
-          Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
           provider.teardown(vm)
-          salt_cmd master_server, 'data.clear'
+          if name != "#{environment}-master"
+            Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
+            salt_cmd master_server, 'data.clear'
+          end
         else
           puts "Not running"
         end

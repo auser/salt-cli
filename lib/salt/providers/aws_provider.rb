@@ -1,4 +1,5 @@
 require 'vagrant'
+require 'pp'
 
 module Salt
   module Providers
@@ -27,7 +28,7 @@ module Salt
         }
         
         puts "launching.."
-        p opts
+        pp opts
         compute.servers.bootstrap(opts)
         ## Need to support private ips on ec2
       end
