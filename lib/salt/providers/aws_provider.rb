@@ -25,12 +25,17 @@ module Salt
           security_group.revoke_port_range(Range.new(port, port))
         end
         
+        flavor_id = machine_config_or_default(:flavor)
+        image_id = machine_config_or_default(:image_id)
+        
         opts = {
           username: 'ubuntu',
           private_key_path: build_keypath,
           public_key_path: "#{build_keypath}.pub",
           tags: {name: name, environment: environment},
-          security_groups: [security_group.name]
+          security_groups: [security_group.name],
+          flavor_id: flavor_id,
+          image_id: image_id
         }
         
         puts "launching.."
@@ -96,9 +101,18 @@ module Salt
       def to_open_ports
         all_ports = []
         all_ports << machine_config[:default][:ports].flatten if machine_config.has_key?(:default)
-        real_name = name.split('-')[-1].to_sym
         all_ports << machine_config[real_name][:ports].flatten if machine_config.has_key?(real_name)
         all_ports.flatten
+      end
+      def real_name
+        name.split('-')[-1].to_sym
+      end
+      def machine_config_or_default(field)
+        if machine_config[real_name] && machine_config[real_name].has_key?(field)
+          machine_config[real_name][field]
+        else
+          machine_config[:default][field]
+        end
       end
       def machine_config
         @machine_config ||= config[:aws][:machines] || {}
