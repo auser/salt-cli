@@ -99,6 +99,9 @@ module Salt
         group.save
         yield(group) if block_given?
       end
+      def destroy_security_group!
+        security_group.destroy
+      end
       def to_open_ports
         all_ports = []
         all_ports << machine_config[:default][:ports].flatten if machine_config.has_key?(:default)
