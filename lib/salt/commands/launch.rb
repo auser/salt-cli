@@ -36,7 +36,8 @@ module Salt
       
       def run_after_launch
         # Set an id for convenience
-        index = provider.list.size
+        index = provider.running_list.size
+        vm = find name
         salt_cmd(vm, "grains.setval index #{index} && sudo restart salt-minion")
       end
       

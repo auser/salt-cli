@@ -12,7 +12,11 @@ module Salt
     
     #### PUBLIC METHODS
     def list
-      raise UnimplementedError.new("inventory")
+      raise UnimplementedError.new("list")
+    end
+    
+    def running_list
+      list.select {|vm| vm.running? }
     end
     
     def to_s
