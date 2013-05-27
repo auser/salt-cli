@@ -13,6 +13,8 @@ module Salt
         else
           run_after_launch_non_master
         end
+        
+        run_after_launch
       end
       
       def run_after_launch_master
@@ -30,6 +32,12 @@ module Salt
           debug "Assigning the roles #{roles.join(', ')}"
           Salt::Commands::Role.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
         end
+      end
+      
+      def run_after_launch
+        # Set an id for convenience
+        index = provider.list.size
+        salt_cmd(vm, "grains.setval index #{index} && sudo restart salt-minion")
       end
       
       def self.additional_options(x)

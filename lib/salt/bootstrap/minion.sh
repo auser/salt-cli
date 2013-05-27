@@ -4,8 +4,9 @@ LOC=${1:-vagrant}
 HOSTNAME=${2:-minion}
 SALT_MASTER=${3:-192.168.98.11}
 ENV=${4:-development}
+INDEX=${5:-1}
 
-echo "------> Bootstrapping minion $HOSTNAME (master: $SALT_MASTER) for environment $ENV"
+echo "------> Bootstrapping minion $HOSTNAME (master: $SALT_MASTER index: $INDEX) for environment $ENV"
 
 __apt_get_noinput() {
     apt-get install -y -o DPkg::Options::=--force-confold $@
@@ -45,6 +46,7 @@ id: $HOSTNAME
 grains:
   environment: $ENV
   location: $LOC
+  index: $INDEX
 """ > /etc/salt/minion
 
 sudo /etc/init.d/salt-minion restart
