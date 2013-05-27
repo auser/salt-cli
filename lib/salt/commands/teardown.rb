@@ -19,12 +19,21 @@ module Salt
             Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
             salt_cmd master_server, 'data.clear'
           end
+          destroy_security_group! if security_group
         else
           puts "Not running"
         end
       end
       
       def self.additional_options(x)
+      end
+      
+      def destroy_security_group!
+        security_group.destroy
+      end
+      
+      def security_group
+        @security_group ||= compute.security_groups.get("#{name}-#{aws[:keyname]}")
       end
       
     end

@@ -14,15 +14,16 @@ module Salt
           end
         end
         
+        diff = [current_open_ports - to_open_ports].flatten
+        unless diff.empty?
+          puts "  revoking security group port #{port}" if debug_level
+          security_group.revoke_port_range(Range.new(diff[0],diff[-1]))
+        end
+        
         ## Open any ports if necessary
         to_open_ports.each do |port|
           puts "  authorizing security group port #{port}" if debug_level
           security_group.authorize_port_range(Range.new(port, port)) unless current_open_ports.include?(port)
-        end
-        
-        [current_open_ports - to_open_ports].flatten.each do |port|
-          puts "  revoking security group port #{port}" if debug_level
-          security_group.revoke_port_range(Range.new(port, port))
         end
         
         flavor_id = machine_config_or_default(:flavor)
