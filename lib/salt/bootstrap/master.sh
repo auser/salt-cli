@@ -102,4 +102,3 @@ sudo salt-key -a saltmaster 2&>1 > /dev/null
 sudo salt-key -a `hostname` 2&>1 > /dev/null
 
 sudo restart salt-master 2&>1 > /dev/null
-sudo salt-call state.highstate -l debug
