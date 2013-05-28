@@ -7,22 +7,16 @@ module Salt
       
       # Launch
       def launch(vm)
-        unless security_group
-          create_security_group! do |group|
-            group.authorize_port_range(22..22)
-            group.authorize_port_range(4505..4506)
-          end
+        create_security_group! unless security_group
+        security_group.reload
+        %w(tcp udp).each do |proto|
+          security_group.revoke_port_range(800..65535, ip_protocol: proto)
         end
         
-        # unless diff.empty?
-        #   puts "  revoking security group port #{port}" if debug_level
-        #   security_group.revoke_port_range(Range.new(diff[0],diff[-1]))
-        # end
-        
         ## Open any ports if necessary
-        current_open_ports.each do |proto, ports|
-          puts "  authorizing security group port #{proto} #{port}" if debug_level
+        to_open_ports.each do |proto, ports|
           ports.each do |port|
+            puts "  authorizing security group port #{proto} #{port}" if debug_level
             unless current_open_ports[proto.to_sym].include?(port)
               security_group.authorize_port_range(Range.new(port, port), {ip_protocol: proto})
             end
@@ -109,16 +103,24 @@ module Salt
         group = compute.security_groups.new({name: "#{name}-#{aws[:keyname]}",
                                     description: "#{name} group for #{aws[:keyname]}"})
         group.save
-        yield(group) if block_given?
+        group
       end
       def destroy_security_group!
         compute.security_groups.get(security_group.name).destroy rescue nil
       end
       def to_open_ports
-        all_ports = []
-        all_ports << machine_config[:default][:ports].flatten if machine_config.has_key?(:default)
-        all_ports << machine_config[real_name][:ports].flatten if machine_config.has_key?(real_name)
-        all_ports.flatten
+        all_ports = {
+          udp: [],
+          tcp: [22]
+        }
+        [:default, real_name].each do |level|
+          if machine_config[level.to_sym].has_key?(:ports)
+            (machine_config[level.to_sym][:ports] || []).each do |pr, ports|
+              (ports || []).each {|port| all_ports[pr] << port }
+            end
+          end
+        end
+        all_ports
       end
       def real_name
         name.split('-')[-1].to_sym
@@ -127,7 +129,7 @@ module Salt
         if machine_config[real_name] && machine_config[real_name].has_key?(field)
           machine_config[real_name][field]
         else
-          machine_config[:default][field]
+          machine_config[:default].has_key?(field) ? machine_config[:default][field] : nil
         end
       end
       def machine_config
