@@ -42,11 +42,13 @@ module Salt
         puts "launching.."
         pp opts
         compute.servers.bootstrap(opts)
+        reset!
         ## Need to support private ips on ec2
       end
       
       def teardown(vm)
         vm.raw.destroy if vm.raw.ready?
+        destroy_security_group!
       end
       
       ## Find a vm named
@@ -100,7 +102,7 @@ module Salt
         yield(group) if block_given?
       end
       def destroy_security_group!
-        security_group.destroy if security_group
+        compute.security_groups.get(security_group.name).destroy rescue nil
       end
       def to_open_ports
         all_ports = []
@@ -128,7 +130,7 @@ module Salt
                                       aws_secret_access_key: aws_secret_access_key})
       end
       def reset!
-        @list = nil
+        @list = @security_group = @compute = nil
       end
       
       def aws_access_key_id

@@ -97,8 +97,9 @@ log_level_logfile: garbage
 # sudo restart salt-master
 
 sudo service salt-minion restart
-sleep 10
-sudo salt-key -a saltmaster
-sudo salt-key -a `hostname`
+sleep 6
+sudo salt-key -a saltmaster 2&>1 > /dev/null
+sudo salt-key -a `hostname` 2&>1 > /dev/null
 
-sudo restart salt-master
+sudo restart salt-master 2&>1 > /dev/null
+sudo salt-call state.highstate -l debug

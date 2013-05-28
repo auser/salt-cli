@@ -10,22 +10,24 @@ module Salt
           return
         end
         if vm.state == :running
-          require_confirmation! <<-EOE
-          Are you sure you want to teardown the machine #{name}.
-          This <%= color('cannot', RED) %> be undone
-          EOE
+          if require_confirmation
+            require_confirmation! <<-EOE
+            Are you sure you want to teardown the machine #{name}.
+            This <%= color('cannot', RED) %> be undone
+            EOE
+          end
           provider.teardown(vm)
           if name != "#{environment}-master"
             Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
             salt_cmd master_server, 'data.clear'
           end
-          provider.destroy_security_group!
         else
           puts "Not running"
         end
       end
       
       def self.additional_options(x)
+        x.on('-y', '--yes', "Answer yes to all questions") {config[:require_confirmation] = false}
       end
       
     end
