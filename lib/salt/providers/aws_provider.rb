@@ -100,7 +100,7 @@ module Salt
         yield(group) if block_given?
       end
       def destroy_security_group!
-        security_group.destroy
+        security_group.destroy if security_group
       end
       def to_open_ports
         all_ports = []

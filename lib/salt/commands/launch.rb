@@ -5,7 +5,12 @@ module Salt
     class Launch < BaseCommand
       def run(args=[])
         debug "Launching vm..."
-        provider.launch(vm)
+        vm = find name
+        if vm && vm.running?
+          puts "Machine already running. Not launching a new one"
+        else
+          provider.launch(vm)
+        end
         Salt::Commands::Bootstrap.new(provider, config).run([])
         
         if name == "#{environment}-master"
@@ -19,6 +24,7 @@ module Salt
       
       def run_after_launch_master
         Salt::Commands::Upload.new(provider, config).run([])
+        5.times {|i| print "."; sleep 1; }
       end
       
       def run_after_launch_non_master

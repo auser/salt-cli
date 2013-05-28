@@ -19,7 +19,7 @@ module Salt
             Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
             salt_cmd master_server, 'data.clear'
           end
-          provider.destroy_security_group! if security_group
+          provider.destroy_security_group!
         else
           puts "Not running"
         end

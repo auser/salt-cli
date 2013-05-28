@@ -23,6 +23,15 @@ module Salt
       self.class.to_s.split("::")[-1].downcase
     end
     
+    def security_group
+    end
+    
+    def create_security_group!(&block)
+    end
+    
+    def destroy_security_group!
+    end
+    
   end
 end
 
