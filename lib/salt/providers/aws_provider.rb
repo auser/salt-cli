@@ -24,7 +24,10 @@ module Salt
         end
         # Grant access to all other of our ports
         all_other_security_groups.each do |sg|
-          security_group.authorize_port_range(22..65535, {group: sg.name})
+          begin
+            security_group.authorize_port_range(22..65535, {group: sg.name})
+          rescue Exception => e
+          end
         end
         
         flavor_id = machine_config_or_default(:flavor)

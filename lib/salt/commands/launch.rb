@@ -6,11 +6,11 @@ module Salt
       def run(args=[])
         debug "Launching vm..."
         vm = find name
-        # if vm && vm.running?
-          # puts "Machine already running. Not launching a new one"
-        # else
+        if vm && vm.running?
+          puts "Machine already running. Not launching a new one"
+        else
           provider.launch(vm)
-        # end
+        end
         Salt::Commands::Bootstrap.new(provider, config).run([])
         
         if name == "#{environment}-master"
