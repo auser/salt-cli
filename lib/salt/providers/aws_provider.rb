@@ -27,6 +27,7 @@ module Salt
           begin
             security_group.authorize_port_range(22..65535, {group: sg.name})
           rescue Exception => e
+            p [:e, e]
           end
         end
         
@@ -118,7 +119,26 @@ module Salt
         group
       end
       def destroy_security_group!
-        compute.security_groups.get(security_group.name).destroy rescue nil
+        sg = compute.security_groups.get(security_group.name)
+        sg.ip_permissions.each do |permission|
+          opts = {}
+          opts[:ip_protocol] = permission['ipProtocol'] if permission['ipProtocol'] && !permission['ipProtocol'].empty?
+          if permission['groups'] && !permission['groups'].empty?
+            opts[:groups] = permission['groups'].map {|g| g['groupName']}.join(",")
+          end
+          begin
+            p [:opts, opts]
+            sg.revoke_port_range(permission['fromPort']..permission['toPort'], opts)
+          rescue Exception => e
+            p [:e, e]
+          end
+        end
+        begin
+          sg.destroy
+        rescue Exception => e
+          puts "There was an error destroying the security_group: "
+          puts e
+        end
       end
       def to_open_ports
         all_ports = {
