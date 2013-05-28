@@ -34,7 +34,7 @@ module Salt
           private_key_path: build_keypath,
           public_key_path: "#{build_keypath}.pub",
           tags: {name: name, environment: environment},
-          security_groups: [security_group.name],
+          groups: [security_group.name],
           flavor_id: flavor_id,
           image_id: image_id
         }
