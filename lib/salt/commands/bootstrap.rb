@@ -9,7 +9,7 @@ module Salt
         remotepath = "/tmp/#{bname}.sh"
         system rsync_cmd(vm, localpath, remotepath)
         
-        index = provider.list.size
+        index = provider.running_list.size
         
         if name == "#{environment}-master" 
           cmd = "sudo /bin/sh #{remotepath} #{provider.to_s} #{environment}"
