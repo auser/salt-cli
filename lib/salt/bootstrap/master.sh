@@ -97,6 +97,7 @@ log_level_logfile: garbage
 echo """
 roles:
   - master
+index: 1
 """ > /etc/salt/grains
 
 # sudo restart salt-master

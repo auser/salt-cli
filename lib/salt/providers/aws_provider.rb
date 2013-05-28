@@ -14,16 +14,19 @@ module Salt
           end
         end
         
-        diff = [current_open_ports - to_open_ports].flatten
-        unless diff.empty?
-          puts "  revoking security group port #{port}" if debug_level
-          security_group.revoke_port_range(Range.new(diff[0],diff[-1]))
-        end
+        # unless diff.empty?
+        #   puts "  revoking security group port #{port}" if debug_level
+        #   security_group.revoke_port_range(Range.new(diff[0],diff[-1]))
+        # end
         
         ## Open any ports if necessary
-        to_open_ports.each do |port|
-          puts "  authorizing security group port #{port}" if debug_level
-          security_group.authorize_port_range(Range.new(port, port)) unless current_open_ports.include?(port)
+        current_open_ports.each do |proto, ports|
+          puts "  authorizing security group port #{proto} #{port}" if debug_level
+          ports.each do |port|
+            unless current_open_ports[proto.to_sym].include?(port)
+              security_group.authorize_port_range(Range.new(port, port), {ip_protocol: proto})
+            end
+          end
         end
         
         flavor_id = machine_config_or_default(:flavor)
@@ -89,12 +92,19 @@ module Salt
       ### Just a small helper to compute the available ports
       def current_open_ports
         tcp_ports = []
+        udp_ports = []
         security_group.ip_permissions.each do |hsh|
           proto, from, to = hsh['ipProtocol'], hsh['fromPort'], hsh['toPort']
-          tcp_ports.push Range.new(from, to).to_a
+          case proto
+          when 'tcp'
+            tcp_ports.push Range.new(from, to).to_a
+          when 'udp'
+            udp_ports.push Range.new(from, to).to_a
+          end
         end
-        tcp_ports.flatten
+        {tcp: tcp_ports.flatten, udp: udp_ports.flatten}
       end
+      #### TCP
       def create_security_group!(&block)
         group = compute.security_groups.new({name: "#{name}-#{aws[:keyname]}",
                                     description: "#{name} group for #{aws[:keyname]}"})

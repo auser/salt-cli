@@ -41,10 +41,6 @@ module Salt
       end
       
       def run_after_launch
-        # Set an id for convenience
-        index = provider.running_list.size
-        vm = find name
-        salt_cmd(vm, "grains.setval index #{index} && sudo restart salt-minion")
       end
       
       def self.additional_options(x)
