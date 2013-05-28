@@ -10,7 +10,7 @@ module Salt
         create_security_group! unless security_group
         security_group.reload
         %w(tcp udp).each do |proto|
-          security_group.revoke_port_range(800..65535, ip_protocol: proto)
+          security_group.revoke_port_range(1..65535, ip_protocol: proto)
         end
         
         ## Open any ports if necessary
@@ -21,6 +21,10 @@ module Salt
               security_group.authorize_port_range(Range.new(port, port), {ip_protocol: proto})
             end
           end
+        end
+        # Grant access to all other of our ports
+        all_other_security_groups.each do |sg|
+          security_group.authorize_port_range(22..65535, {group: sg.name})
         end
         
         flavor_id = machine_config_or_default(:flavor)
@@ -82,6 +86,11 @@ module Salt
       end
       def security_group
         @security_group ||= compute.security_groups.get("#{name}-#{aws[:keyname]}")
+      end
+      def all_other_security_groups
+        running_list.map do |vm|
+          compute.security_groups.get("#{vm.name}-#{aws[:keyname]}") unless vm.name.to_s.index(name)
+        end.compact
       end
       ### Just a small helper to compute the available ports
       def current_open_ports

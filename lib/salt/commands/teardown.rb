@@ -10,7 +10,7 @@ module Salt
           return
         end
         if vm.state == :running
-          if require_confirmation
+          unless force_yes
             require_confirmation! <<-EOE
             Are you sure you want to teardown the machine #{name}.
             This <%= color('cannot', RED) %> be undone
@@ -27,7 +27,7 @@ module Salt
       end
       
       def self.additional_options(x)
-        x.on('-y', '--yes', "Answer yes to all questions") {config[:require_confirmation] = false}
+        x.on('-y', '--yes', "Answer yes to all questions") {config[:force_yes] = true}
       end
       
     end
