@@ -44,6 +44,7 @@ module Salt
       [
         "rsync", "-az",
         "#{debug_level ? "-v" : ""}",
+        "--exclude '.git'",
         "-e \"ssh #{ssh_opts(vm).join(' ')}\""
       ]
     end

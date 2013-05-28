@@ -94,11 +94,16 @@ log_level: debug
 log_level_logfile: garbage
 """ > /etc/salt/minion
 
+echo """
+roles:
+  - master
+""" > /etc/salt/grains
+
 # sudo restart salt-master
 
 sudo service salt-minion restart
-sleep 6
-sudo salt-key -a saltmaster 2&>1 > /dev/null
-sudo salt-key -a `hostname` 2&>1 > /dev/null
+sleep 10
+sudo salt-key -a saltmaster
+sudo salt-key -a `hostname`
 
-sudo restart salt-master 2&>1 > /dev/null
+sudo restart salt-master
