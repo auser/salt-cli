@@ -24,11 +24,7 @@ module Salt
         end
         # Grant access to all other of our ports
         all_other_security_groups.each do |sg|
-          begin
-            security_group.authorize_port_range(22..65535, {group: sg.name})
-          rescue Exception => e
-            p [:e, e]
-          end
+          security_group.authorize_port_range(22..65535, {group: "'#{sg.name}'"}) rescue nil
         end
         
         flavor_id = machine_config_or_default(:flavor)
@@ -127,7 +123,6 @@ module Salt
             opts[:groups] = permission['groups'].map {|g| g['groupName']}.join(",")
           end
           begin
-            p [:opts, opts]
             sg.revoke_port_range(permission['fromPort']..permission['toPort'], opts)
           rescue Exception => e
             p [:e, e]
