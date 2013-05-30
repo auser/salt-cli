@@ -100,9 +100,9 @@ roles:
 index: 1
 """ > /etc/salt/grains
 
-# sudo restart salt-master
-
-sudo service salt-minion restart
+## START the saltmaster
+sudo start salt-master
+sudo restart salt-minion
 sleep 10
 sudo salt-key -a saltmaster
 sudo salt-key -a `hostname`

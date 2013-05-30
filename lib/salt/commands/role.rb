@@ -5,7 +5,7 @@ module Salt
       def run(args=[])
         require_master_server!
         
-        if list
+        if list || available_roles
           if available_roles
             puts "Available roles:"
             available_roles.each do |name|

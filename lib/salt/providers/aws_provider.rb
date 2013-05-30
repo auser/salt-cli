@@ -116,18 +116,21 @@ module Salt
       end
       def destroy_security_group!
         sg = compute.security_groups.get(security_group.name)
-        sg.ip_permissions.each do |permission|
-          opts = {}
-          opts[:ip_protocol] = permission['ipProtocol'] if permission['ipProtocol'] && !permission['ipProtocol'].empty?
-          if permission['groups'] && !permission['groups'].empty?
-            opts[:groups] = permission['groups'].map {|g| g['groupName']}.join(",")
-          end
-          begin
-            sg.revoke_port_range(permission['fromPort']..permission['toPort'], opts)
-          rescue Exception => e
-            p [:e, e]
-          end
-        end
+      	unless sg.name == "default"
+      		sg.ip_permissions.each do |permission|
+      			opts = {}
+      			opts[:ip_protocol] = permission['ipProtocol'] if permission['ipProtocol'] && !permission['ipProtocol'].empty?
+      			range = Range.new(permission['fromPort'],permission['toPort'])
+
+      			if permission['groups'] && !permission['groups'].empty?
+      				permission['groups'].each do |pgroup| 
+      					sg.revoke_port_range(range, opts.merge(group: pgroup['groupName']))
+      				end
+      			else
+      				sg.revoke_port_range(range, opts)
+      			end
+      		end
+      	end
         begin
           sg.destroy
         rescue Exception => e
@@ -141,7 +144,7 @@ module Salt
           tcp: [22]
         }
         [:default, real_name].each do |level|
-          if machine_config[level.to_sym].has_key?(:ports)
+          if machine_config[level.to_sym] && machine_config[level.to_sym].has_key?(:ports)
             (machine_config[level.to_sym][:ports] || []).each do |pr, ports|
               (ports || []).each {|port| all_ports[pr] << port }
             end
