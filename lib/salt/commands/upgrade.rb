@@ -6,7 +6,7 @@ module Salt
       def run(args=[])
         require_master_server!
         
-        dsystem sudo_cmd "apt-get upgrade salt-master"
+        dsystem sudo_cmd "apt-get -y upgrade salt-master"
         dsystem sudo_cmd "service salt-master restart"
         salt_cmd master_server, "pkg.upgrade salt-minion"
         salt_cmd master_server, "service.restart salt-minion"
