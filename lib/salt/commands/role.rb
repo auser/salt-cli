@@ -5,7 +5,7 @@ module Salt
       def run(args=[])
         require_master_server!
         
-        if list || available_roles
+        if list || list_available_roles
           if available_roles
             puts "Available roles:"
             available_roles.each do |name|
@@ -35,7 +35,7 @@ module Salt
       end
 
       def self.additional_options(x)
-        x.on('-a', '--available', "List the available roles") { config[:available] = true}
+        x.on('-a', '--available', "List the available roles") { config[:list_available_roles] = true}
         x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n}
         x.on('-l', '--list', "List keys") {config[:list] = true }
       end

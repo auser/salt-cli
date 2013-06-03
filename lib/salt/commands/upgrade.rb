@@ -8,8 +8,8 @@ module Salt
         
         dsystem sudo_cmd master_server, "apt-get -y upgrade salt-master"
         dsystem sudo_cmd master_server, "service salt-master restart"
-        dsystem salt_cmd master_server, "pkg.upgrade salt-minion"
-        dsystem salt_cmd master_server, "service.restart salt-minion"
+        salt_cmd master_server, "pkg.upgrade salt-minion"
+        salt_cmd master_server, "service.restart salt-minion"
       end
     end
   end
