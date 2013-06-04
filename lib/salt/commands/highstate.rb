@@ -6,7 +6,6 @@ module Salt
         Salt::Commands::Upload.new(provider, config.merge(name: "master")).run([])
         vm = find name
         salt_cmd vm, 'saltutil.sync_all'
-        salt_cmd vm, 'data.clear'
         salt_cmd vm, "state.highstate"
       end
     end

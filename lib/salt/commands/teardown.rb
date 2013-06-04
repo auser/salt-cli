@@ -19,7 +19,6 @@ module Salt
           provider.teardown(vm)
           if name != "#{environment}-master"
             Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
-            salt_cmd master_server, 'data.clear'
           end
         else
           puts "Not running"
