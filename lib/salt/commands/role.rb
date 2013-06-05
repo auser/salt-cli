@@ -5,7 +5,16 @@ module Salt
       def run(args=[])
         require_master_server!
         
-        if list || list_available_roles
+        return list_roles if list || list_available_roles
+        raise "No roles given. Please pass roles to set" unless roles
+        vm = find name
+        puts salt_cmd(vm, "grains.setval roles \"[#{roles}]\" && sudo salt-call mine.update && sudo restart salt-minion")
+      end
+      
+      def list_roles
+        if name != "#{environment}-master"
+          dsystem "#{salt_cmd( find(name), "grains.item roles")}"
+        elsif list_available_roles
           if available_roles
             puts "Available roles:"
             available_roles.each do |name|
@@ -19,10 +28,6 @@ module Salt
               end
             end
           end
-        else
-          raise "No roles given. Please pass roles to set" unless roles
-          vm = find name
-          puts salt_cmd(vm, "grains.setval roles \"[#{roles}]\" && sudo restart salt-minion")
         end
       end
       

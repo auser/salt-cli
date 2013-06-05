@@ -16,12 +16,20 @@ module Salt
         ## Open any ports if necessary
         to_open_ports.each do |proto, ports|
           ports.each do |port|
+            range = case port.class.to_s
+            when "Fixnum"
+              Range.new(port, port)
+            when "String"
+              e = port.split("..").map(&:to_i)
+              Range.new e[0],e[1]
+            end
             puts "  authorizing security group port #{proto} #{port}" if debug_level
             unless current_open_ports[proto.to_sym].include?(port)
-              security_group.authorize_port_range(Range.new(port, port), {ip_protocol: proto})
+              security_group.authorize_port_range(range, {ip_protocol: proto})
             end
           end
         end
+
         # Grant access to all other of our ports
         all_other_security_groups.each do |sg|
           security_group.authorize_port_range(22..65535, {group: "'#{sg.name}'"}) rescue nil
