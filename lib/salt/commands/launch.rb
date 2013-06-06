@@ -8,9 +8,11 @@ module Salt
         if launch_plan
           if config[:plans] && config[:plans][launch_plan.to_sym]
             plan = config[:plans][launch_plan.to_sym]
-            plan.each do |name, custom_opts|
-              custom_opts = custom_opts || {}
-              launch_by_name(name, custom_opts)
+            plan.each do |mach|
+              mach.each do |name, custom_opts|
+                custom_opts = custom_opts || {}
+                launch_by_name(name.to_s, custom_opts)
+              end
             end
           else
             puts "ERROR: Launch plan #{launch_plan} not found"
@@ -22,9 +24,10 @@ module Salt
       end
       
       def launch_by_name(n=name, custom_opts={})
-        vm = find n
+        self.name = config[:name] = n
+        vm = find name
         if vm && vm.running?
-          puts "Machine already running. Not launching a new one"
+          puts "Machine (#{n}) already running. Not launching a new one"
         else
           provider.launch(vm, custom_opts)
         end
