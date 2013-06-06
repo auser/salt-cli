@@ -6,7 +6,7 @@ module Salt
     class AwsProvider < BaseProvider
       
       # Launch
-      def launch(vm)
+      def launch(vm, opts={})
         create_security_group! unless security_group
         security_group.reload
         %w(tcp udp).each do |proto|
@@ -14,7 +14,7 @@ module Salt
         end
         
         ## Open any ports if necessary
-        to_open_ports.each do |proto, ports|
+        to_open_ports(opts).each do |proto, ports|
           ports.each do |port|
             range = case port.class.to_s
             when "Fixnum"
@@ -35,8 +35,8 @@ module Salt
           security_group.authorize_port_range(22..65535, {group: "'#{sg.name}'"}) rescue nil
         end
         
-        flavor_id = machine_config_or_default(:flavor)
-        image_id = machine_config_or_default(:image_id)
+        flavor_id = opts[:flavor] || machine_config_or_default(:flavor)
+        image_id = opts[:image_id] || machine_config_or_default(:image_id)
         
         opts = {
           username: 'ubuntu',
@@ -146,7 +146,7 @@ module Salt
           puts e
         end
       end
-      def to_open_ports
+      def to_open_ports(opts)
         all_ports = {
           udp: [],
           tcp: [22]
@@ -156,6 +156,11 @@ module Salt
             (machine_config[level.to_sym][:ports] || []).each do |pr, ports|
               (ports || []).each {|port| all_ports[pr] << port }
             end
+          end
+        end
+        if opts.has_key?(:ports)
+          opts[:ports].each do |pr, ports|
+            (ports || []).each {|port| all_ports[pr] << port}
           end
         end
         all_ports

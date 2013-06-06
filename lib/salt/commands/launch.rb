@@ -5,11 +5,28 @@ module Salt
     class Launch < BaseCommand
       def run(args=[])
         debug "Launching vm..."
-        vm = find name
+        if launch_plan
+          if config[:plans] && config[:plans][launch_plan.to_sym]
+            plan = config[:plans][launch_plan.to_sym]
+            plan.each do |name, custom_opts|
+              custom_opts = custom_opts || {}
+              launch_by_name(name, custom_opts)
+            end
+          else
+            puts "ERROR: Launch plan #{launch_plan} not found"
+            exit
+          end
+        else
+          launch_by_name
+        end
+      end
+      
+      def launch_by_name(n=name, custom_opts={})
+        vm = find n
         if vm && vm.running?
           puts "Machine already running. Not launching a new one"
         else
-          provider.launch(vm)
+          provider.launch(vm, custom_opts)
         end
         Salt::Commands::Bootstrap.new(provider, config).run([])
         
@@ -47,6 +64,7 @@ module Salt
         x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n.split(",")}
         x.on('-p', '--ports <ports>', "Port to open up (if necessary)") {|n| config[:ports] = n.split(",")}
         x.on("-a", "--auto_accept", "Auto accept the new role") {|n| config[:auto_accept] = true}
+        x.on("-p", "--plan <plan_name>", "Launch a plan") {|n| config[:launch_plan] = n}
       end
       
     end
