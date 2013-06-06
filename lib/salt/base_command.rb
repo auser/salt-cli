@@ -66,6 +66,7 @@ module Salt
       
       config.recursive_symbolize_keys!
       
+      config[:provider_name] = provider
       config[:name] = generate_name(config)
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
       inst = new(provider, config)

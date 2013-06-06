@@ -23,6 +23,10 @@ module Salt
       self.class.to_s.split("::")[-1].downcase
     end
     
+    def set_name(new_name)
+      config[:name] = self.name = new_name
+    end
+    
     def reset!
     end
     

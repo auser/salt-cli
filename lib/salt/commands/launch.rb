@@ -11,6 +11,8 @@ module Salt
             plan.each do |mach|
               mach.each do |name, custom_opts|
                 custom_opts = custom_opts || {}
+                self.name = self.config[:name] = BaseCommand.generate_name(config.merge(name: name))
+                provider.set_name self.name
                 launch_by_name(name.to_s, custom_opts)
               end
             end
@@ -24,22 +26,21 @@ module Salt
       end
       
       def launch_by_name(n=name, custom_opts={})
-        self.name = config[:name] = n
-        vm = find name
+        vm = find n
         if vm && vm.running?
           puts "Machine (#{n}) already running. Not launching a new one"
         else
           provider.launch(vm, custom_opts)
-        end
-        Salt::Commands::Bootstrap.new(provider, config).run([])
+          Salt::Commands::Bootstrap.new(provider, config).run([])
         
-        if name == "#{environment}-master"
-          run_after_launch_master
-        else
-          run_after_launch_non_master
-        end
+          if name == "#{environment}-master"
+            run_after_launch_master
+          else
+            run_after_launch_non_master
+          end
         
-        run_after_launch
+          run_after_launch
+        end
       end
       
       def run_after_launch_master

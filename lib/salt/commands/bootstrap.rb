@@ -19,7 +19,7 @@ module Salt
         
         IO.popen(sudo_cmd(vm, cmd)) do |d|
           while line = d.gets
-            puts line
+            puts line if debug_level
           end
         end
       end
