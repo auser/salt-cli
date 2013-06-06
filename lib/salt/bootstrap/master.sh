@@ -101,7 +101,7 @@ index: 1
 """ > /etc/salt/grains
 
 ## START the saltmaster
-sudo restart salt-master
+# sudo restart salt-master
 sudo restart salt-minion
 sleep 15
 sudo salt-key -a saltmaster
