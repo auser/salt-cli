@@ -4,6 +4,21 @@ module Salt
   module Commands
     class Teardown < BaseCommand
       def run(args=[])
+        if all
+          teardown_all!
+        else
+          teardown_single!(name)
+        end
+      end
+      
+      def teardown_all!
+        provider.running_list.each do |m|
+          teardown_single! m.name unless m.name == "#{environment}-master"
+        end
+        teardown_single!("#{environment}-master")
+      end
+      
+      def teardown_single!(name)
         vm = find name
         unless vm
           puts "Machine not found or not running: #{name}"
@@ -27,6 +42,7 @@ module Salt
       
       def self.additional_options(x)
         x.on('-y', '--yes', "Answer yes to all questions") {config[:force_yes] = true}
+        x.on('-a', '--all', "Teardown all running nodes") {config[:all] = true}
       end
       
     end
