@@ -136,7 +136,7 @@ module Salt
       end
       def destroy_security_group!(security_group)
         sg = compute.security_groups.get(security_group.name)
-      	unless sg.name == "default"
+      	unless sg.nil? || sg.name == "default"
       		sg.ip_permissions.each do |permission|
       			opts = {}
       			opts[:ip_protocol] = permission['ipProtocol'] if permission['ipProtocol'] && !permission['ipProtocol'].empty?
@@ -150,12 +150,13 @@ module Salt
       				sg.revoke_port_range(range, opts)
       			end
       		end
-      	end
-        begin
-          sg.destroy
-        rescue Exception => e
-          puts "There was an error destroying the security_group: "
-          puts e
+
+          begin
+            sg.destroy
+          rescue Exception => e
+            puts "There was an error destroying the security_group: "
+            puts e
+          end
         end
       end
       def to_open_ports(opts)

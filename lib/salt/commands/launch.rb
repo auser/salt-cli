@@ -26,8 +26,7 @@ module Salt
                 launch_by_name(name.to_s)
               end
             end
-            master_name = BaseCommand.generate_name({name: name, environment: environment})
-            provider.set_name master_name
+            provider.set_name "#{environment}-master"
             Salt::Commands::Highstate.new(provider, config.merge(name: "master")).run([])
           else
             puts "ERROR: Launch plan #{launch_plan} not found"
@@ -46,35 +45,36 @@ module Salt
           provider.launch(vm)
           Salt::Commands::Bootstrap.new(provider, config).run([])
         
-          if name == "#{environment}-master"
-            run_after_launch_master
+          p [:name, n]
+          if n == "master"
+            run_after_launch_master(n)
           else
-            run_after_launch_non_master
+            run_after_launch_non_master(n)
           end
         
-          run_after_launch
+          run_after_launch(n)
         end
       end
       
-      def run_after_launch_master
-        Salt::Commands::Upload.new(provider, config).run([])
+      def run_after_launch_master(n=name)
+        Salt::Commands::Upload.new(provider, config.merge(name: "master")).run([])
         5.times {|i| print "."; sleep 1; }
       end
       
-      def run_after_launch_non_master
+      def run_after_launch_non_master(n=name)
         if true || auto_accept
           debug "Accepting the key"
-          Salt::Commands::Key.new(provider, config.merge(force: true, name: name)).run([])
+          Salt::Commands::Key.new(provider, config.merge(force: true, name: n)).run([])
           5.times {|i| print "."; sleep 1; }
         end
     
         if roles
           debug "Assigning the roles #{roles.join(', ')}"
-          Salt::Commands::Role.new(provider, config.merge(debug: true, roles: roles.join(','))).run([])
+          Salt::Commands::Role.new(provider, config.merge(name: n, debug: debug_level, roles: roles.join(','))).run([])
         end
       end
       
-      def run_after_launch
+      def run_after_launch(n=name)
       end
       
       def self.additional_options(x)
