@@ -20,10 +20,10 @@ module Salt
                 custom_opts.merge!(name: new_name)
                 custom_opts.each do |k,v|
                   self.config[k] = v
-                  instance_variable_set("@#{k}", v)
+                  self.send "#{k}=", v
                 end
                 provider.set_name new_name
-                launch_by_name(name.to_s)
+                launch_by_name(name.to_s, config)
               end
             end
             provider.set_name "#{environment}-master"
@@ -37,7 +37,7 @@ module Salt
         end
       end
       
-      def launch_by_name(n=name)
+      def launch_by_name(n=name, config={})
         vm = find n
         if vm && vm.running?
           puts "Machine (#{n}) already running. Not launching a new one"
@@ -67,7 +67,7 @@ module Salt
           Salt::Commands::Key.new(provider, config.merge(force: true, name: n)).run([])
           5.times {|i| print "."; sleep 1; }
         end
-    
+        
         if roles
           debug "Assigning the roles #{roles.join(', ')}"
           Salt::Commands::Role.new(provider, config.merge(name: n, debug: debug_level, roles: roles.join(','))).run([])

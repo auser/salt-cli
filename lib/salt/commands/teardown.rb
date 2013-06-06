@@ -6,10 +6,10 @@ module Salt
       def run(args=[])
         if all
           teardown_all!
+          cleanup! if cleanup
         else
           teardown_single!(name)
         end
-        cleanup! if cleanup
       end
       
       def teardown_all!
