@@ -19,12 +19,16 @@ module Salt
                 new_name = BaseCommand.generate_name({name: name, environment: environment})
                 custom_opts.merge!(name: new_name)
                 custom_opts.each do |k,v|
-                  instance_variable_set("@#{k}", self.config[k] = v)
+                  self.config[k] = v
+                  instance_variable_set("@#{k}", v)
                 end
-                provider.set_name self.name
+                provider.set_name new_name
                 launch_by_name(name.to_s)
               end
             end
+            master_name = BaseCommand.generate_name({name: name, environment: environment})
+            provider.set_name master_name
+            Salt::Commands::Highstate.new(provider, config.merge(name: "master")).run([])
           else
             puts "ERROR: Launch plan #{launch_plan} not found"
             exit

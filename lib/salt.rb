@@ -43,7 +43,7 @@ Available commands:
     File.expand_path("salt-config.yml", Dir.pwd)
   end
   def self.read_config(f, opts={})
-    YAML::load_file(f)
+    YAML::load_file(f) if f && File.file?(f)
   end
   def self.root_dir
     @root_dir ||= File.expand_path(File.join(Dir.pwd, "deploy"))
