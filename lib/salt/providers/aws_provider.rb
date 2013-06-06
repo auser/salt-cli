@@ -8,7 +8,7 @@ module Salt
       # Launch
       def launch(vm, opts={})
         create_security_group! unless security_group
-        security_group.reload
+        security_group.reload if security_group
         %w(tcp udp).each do |proto|
           security_group.revoke_port_range(1..65535, ip_protocol: proto)
         end
@@ -131,7 +131,7 @@ module Salt
       def create_security_group!(&block)
         group = compute.security_groups.new({name: "#{name}-#{aws[:keyname]}",
                                     description: "#{name} group for #{aws[:keyname]}"})
-        group.save
+        group.save rescue nil
         group
       end
       def destroy_security_group!(security_group)

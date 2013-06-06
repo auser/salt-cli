@@ -22,14 +22,6 @@ apt-get update
 # Set the hostname
 echo """
 127.0.0.1       localhost   saltmaster
-
-# The following lines are desirable for IPv6 capable hosts
-::1 ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
 """ > /etc/hosts
 echo "saltmaster" > /etc/hostname
 hostname `cat /etc/hostname`
@@ -101,7 +93,8 @@ index: 1
 """ > /etc/salt/grains
 
 ## START the saltmaster
-# sudo restart salt-master
+sudo restart salt-master
+sleep 5
 sudo restart salt-minion
 sleep 15
 sudo salt-key -a saltmaster
