@@ -48,7 +48,6 @@ module Salt
           image_id: image_id
         }
         
-        puts "launching.."
         pp opts
         compute.servers.bootstrap(opts)
         reset!

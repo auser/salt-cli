@@ -20,15 +20,6 @@ apt-get update
 echo """
 127.0.0.1       localhost   $HOSTNAME
 $SALT_MASTER    saltmaster
-
-# The following lines are desirable for IPv6 capable hosts
-::1 ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
-
 """ > /etc/hosts
 echo "$HOSTNAME" > /etc/hostname
 hostname `cat /etc/hostname`
@@ -49,6 +40,7 @@ grains:
   index: $INDEX
 """ > /etc/salt/minion
 
+sleep 5
 sudo /etc/init.d/salt-minion restart
 
 echo "------> The minion is booted and waiting for approval

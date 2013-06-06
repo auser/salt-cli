@@ -23,7 +23,7 @@ module Salt
                   self.send "#{k}=", v
                 end
                 provider.set_name new_name
-                launch_by_name(name.to_s, config)
+                launch_by_name(name.to_s)
               end
             end
             provider.set_name "#{environment}-master"
@@ -37,7 +37,7 @@ module Salt
         end
       end
       
-      def launch_by_name(n=name, config={})
+      def launch_by_name(n=name)
         vm = find n
         if vm && vm.running?
           puts "Machine (#{n}) already running. Not launching a new one"
@@ -45,7 +45,6 @@ module Salt
           provider.launch(vm)
           Salt::Commands::Bootstrap.new(provider, config).run([])
         
-          p [:name, n]
           if n == "master"
             run_after_launch_master(n)
           else
@@ -69,8 +68,9 @@ module Salt
         end
         
         if roles
-          debug "Assigning the roles #{roles.join(', ')}"
+          debug "Assigning the roles #{roles.join(',')} to #{n}"
           Salt::Commands::Role.new(provider, config.merge(name: n, debug: debug_level, roles: roles.join(','))).run([])
+          5.times {|i| print "."; sleep 1; }
         end
       end
       

@@ -4,7 +4,6 @@ module Salt
       def run(args=[])
         require_master_server!
         Salt::Commands::Upload.new(provider, config.merge(name: "master")).run([])
-        p [:name, name]
         vm = find name
         salt_cmd vm, 'saltutil.sync_all'
         salt_cmd vm, "state.highstate"
