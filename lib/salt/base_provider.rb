@@ -15,6 +15,11 @@ module Salt
       raise UnimplementedError.new("list")
     end
     
+    # Cleanup
+    def cleanup!
+      raise UnimplementedError.new("cleanup")
+    end
+    
     def running_list
       list.select {|vm| vm.running? }
     end

@@ -101,9 +101,9 @@ index: 1
 """ > /etc/salt/grains
 
 ## START the saltmaster
-sudo start salt-master
+sudo restart salt-master
 sudo restart salt-minion
-sleep 10
+sleep 15
 sudo salt-key -a saltmaster
 sudo salt-key -a `hostname`
 

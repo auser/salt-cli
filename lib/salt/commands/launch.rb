@@ -4,16 +4,25 @@ module Salt
   module Commands
     class Launch < BaseCommand
       def run(args=[])
-        debug "Launching vm..."
         if launch_plan
           if config[:plans] && config[:plans][launch_plan.to_sym]
             plan = config[:plans][launch_plan.to_sym]
             plan.each do |mach|
               mach.each do |name, custom_opts|
+                old_config = config.dup
                 custom_opts = custom_opts || {}
-                self.name = self.config[:name] = BaseCommand.generate_name(config.merge(name: name))
+                # Change this on the fly
+                # Somewhat of a dirty approach.
+                # This really should be cleaned up
+                # This gigantic method basically replicates calling a command from
+                # the commandline.
+                new_name = BaseCommand.generate_name({name: name, environment: environment})
+                custom_opts.merge!(name: new_name)
+                custom_opts.each do |k,v|
+                  instance_variable_set("@#{k}", self.config[k] = v)
+                end
                 provider.set_name self.name
-                launch_by_name(name.to_s, custom_opts)
+                launch_by_name(name.to_s)
               end
             end
           else
@@ -25,12 +34,12 @@ module Salt
         end
       end
       
-      def launch_by_name(n=name, custom_opts={})
+      def launch_by_name(n=name)
         vm = find n
         if vm && vm.running?
           puts "Machine (#{n}) already running. Not launching a new one"
         else
-          provider.launch(vm, custom_opts)
+          provider.launch(vm)
           Salt::Commands::Bootstrap.new(provider, config).run([])
         
           if name == "#{environment}-master"

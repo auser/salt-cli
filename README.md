@@ -1,24 +1,38 @@
 # Salt
 
-TODO: Write a gem description
+Opinionated salt-stack deployment
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'salt'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install salt
 
 ## Usage
 
-TODO: Write usage instructions here
+SaltCli is an opinionated salt stack deployment. If you don't like it, make one for yourself :).
+
+SaltStack provides a developer the ability to write salt stack states once and deploy them to various cloud providers with the same workflow.
+
+By defining a `salt-cloud.yml` file (or a Vagrantfile, for vagrant), you can easily launch instances in the "cloud" ready to be deployed and highstated. 
+
+#### Current providers supported:
+
+* aws
+* vagrant
+
+#### Available commands
+
+* list
+* launch
+* bootstrap
+* teardown
+* ssh
+* key
+* role
+* command
+* run
+* upload
+* upgrade
+* highstate
 
 ## Contributing
 

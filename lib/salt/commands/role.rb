@@ -2,10 +2,9 @@ module Salt
   module Commands
     class Role < BaseCommand
 
-      def run(args=[])
-        require_master_server!
-        
+      def run(args=[])        
         return list_roles if list || list_available_roles
+        require_master_server!
         raise "No roles given. Please pass roles to set" unless roles
         vm = find name
         puts salt_cmd(vm, "grains.setval roles \"[#{roles}]\" && sudo salt-call mine.update && sudo restart salt-minion")

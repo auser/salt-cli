@@ -25,7 +25,7 @@ module Salt
             end
             puts "  authorizing security group port #{proto} #{port}" if debug_level
             unless current_open_ports[proto.to_sym].include?(port)
-              security_group.authorize_port_range(range, {ip_protocol: proto})
+              security_group.authorize_port_range(range, {ip_protocol: proto}) rescue nil
             end
           end
         end
@@ -57,7 +57,16 @@ module Salt
       
       def teardown(vm)
         vm.raw.destroy if vm.raw.ready?
-        destroy_security_group!
+        destroy_security_group!(security_group)
+      end
+      
+      # Cleanup
+      def cleanup!
+        # Cleanup security_groups
+        all_security_groups(false).each do |sg|
+          puts "Cleaning up security group: #{sg.name}" if debug_level
+          destroy_security_group!(sg) if sg
+        end
       end
       
       ## Find a vm named
@@ -96,8 +105,11 @@ module Salt
         @security_group ||= compute.security_groups.get("#{name}-#{aws[:keyname]}")
       end
       def all_other_security_groups
-        running_list.map do |vm|
-          compute.security_groups.get("#{vm.name}-#{aws[:keyname]}") unless vm.name.to_s.index(name)
+        all_security_groups.reject {|sg| name.to_s.index(sg.name) }
+      end
+      def all_security_groups(only_running=true)
+        (only_running ? running_list : list).map do |vm|
+          compute.security_groups.get("#{vm.name}-#{aws[:keyname]}")
         end.compact
       end
       ### Just a small helper to compute the available ports
@@ -122,7 +134,7 @@ module Salt
         group.save
         group
       end
-      def destroy_security_group!
+      def destroy_security_group!(security_group)
         sg = compute.security_groups.get(security_group.name)
       	unless sg.name == "default"
       		sg.ip_permissions.each do |permission|
