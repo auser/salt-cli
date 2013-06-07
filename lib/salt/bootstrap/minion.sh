@@ -5,6 +5,7 @@ HOSTNAME=${2:-minion}
 SALT_MASTER=${3:-192.168.98.11}
 ENV=${4:-development}
 INDEX=${5:-1}
+ROLES=$6
 
 echo "------> Bootstrapping minion $HOSTNAME (master: $SALT_MASTER index: $INDEX) for environment $ENV"
 
@@ -46,3 +47,10 @@ sudo /etc/init.d/salt-minion restart
 echo "------> The minion is booted and waiting for approval
 Log in to the master machine and accept the key"
 
+echo """
+index: $INDEX
+roles:
+""" > /etc/salt/grains
+echo $ROLES | sed -n 1'p' | tr ',' '\n' | while read word; do
+  echo "  - $word" >> /etc/salt/grains
+done

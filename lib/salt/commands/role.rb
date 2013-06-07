@@ -8,8 +8,9 @@ module Salt
         raise "No roles given. Please pass roles to set" unless roles
         vm = find name
         cmds = [
-          "sudo salt-call grains.setval roles \"[#{roles}]\"",
-          "sudo salt-call mine.update"
+          "sudo restart salt-minion",
+          "sleep 5",
+          "sudo salt-call grains.setval roles \"[#{roles}]\""
         ]
         dsystem sudo_cmd(vm, cmds.join(" && "))
       end

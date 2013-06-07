@@ -13,10 +13,12 @@ module Salt
         
         if name == "#{environment}-master" 
           cmd = "sudo /bin/sh #{remotepath} #{provider.to_s} #{environment}"
-        else 
-          cmd = "sudo /bin/sh #{remotepath} #{provider.to_s} #{name} #{master_server.preferred_ip} #{environment} #{index}"
+        else
+          rs = roles ? roles.join(",") : ""
+          cmd = "sudo /bin/sh #{remotepath} #{provider.to_s} #{name} #{master_server.preferred_ip} #{environment} #{index} #{rs}"
         end
         
+        debug cmd
         IO.popen(sudo_cmd(vm, cmd)) do |d|
           while line = d.gets
             puts line if debug_level
@@ -26,6 +28,7 @@ module Salt
 
       def self.additional_options(x)
         x.on("-m", "--command <command>", "Command to run") {|n| config[:command] = n}
+        x.on("-r", "--roles <roles>", "Roles") {|n| config[:roles] = n}
       end
 
     end
