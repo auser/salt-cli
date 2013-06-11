@@ -78,18 +78,20 @@ module Salt
       ## List of the vm objects
       def list
         @list ||= raw_list.map do |vm|
-          Machine.new({
-            state: vm.state.to_sym,
-            name: vm.tags["name"],
-            user: user,
-            dns: vm.dns_name,
-            public_ip: vm.public_ip_address,
-            private_ip: vm.private_ip_address,
-            preferred_ip: vm.private_ip_address,
-            key: build_keypath,
-            raw: vm
-          })
-        end
+          if vm.tags['name'].index(environment)
+            Machine.new({
+              state: vm.state.to_sym,
+              name: vm.tags["name"],
+              user: user,
+              dns: vm.dns_name,
+              public_ip: vm.public_ip_address,
+              private_ip: vm.private_ip_address,
+              preferred_ip: vm.private_ip_address,
+              key: build_keypath,
+              raw: vm
+            })
+          end
+        end.compact
       end
       
       ###### PRIVATE

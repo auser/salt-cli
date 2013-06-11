@@ -4,9 +4,8 @@ module Salt
   module Commands
     class List < BaseCommand
       def run(args=[])
-        provider.list.select do |m|
-          all ? true : m.running?
-        end.each do |m|
+        cmd = all ? :list : :running_list
+        provider.send(cmd).each do |m|
           puts machine_string(m)
         end
       end
