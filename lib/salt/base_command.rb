@@ -1,11 +1,13 @@
 require 'ostruct'
 require 'highline/import'
 require 'salt/ssh'
+require 'salt/debug'
 
 module Salt
   # Base command
   class BaseCommand < OpenStruct
     include SSH
+    include Debug
     attr_reader :config, :provider
     
     def initialize(provider, opts={})
@@ -16,10 +18,6 @@ module Salt
 
     def run(args, opts={})
       raise "Not implemented"
-    end
-    
-    def debug(msg)
-      puts "#{msg}"
     end
     
     # PRIVATE

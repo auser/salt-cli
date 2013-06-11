@@ -1,9 +1,11 @@
 require 'vagrant'
 require 'pp'
+require 'salt/debug'
 
 module Salt
   module Providers
     class AwsProvider < BaseProvider
+      include Debug
       
       # Launch
       def launch(vm, opts={})
@@ -13,6 +15,7 @@ module Salt
           security_group.revoke_port_range(1..65535, ip_protocol: proto) rescue nil
         end
         
+        debug "  running with #{security_group.name}"
         ## Open any ports if necessary
         to_open_ports(opts).each do |proto, ports|
           ports.each do |port|
@@ -23,7 +26,7 @@ module Salt
               e = port.split("..").map(&:to_i)
               Range.new e[0],e[1]
             end
-            puts "  authorizing security group port #{proto} #{port}" if debug_level
+            debug "  authorizing security group port #{proto} #{port}"
             unless current_open_ports[proto.to_sym].include?(port)
               security_group.authorize_port_range(range, {ip_protocol: proto}) rescue nil
             end
@@ -63,7 +66,7 @@ module Salt
       def cleanup!
         # Cleanup security_groups
         all_security_groups(false).each do |sg|
-          puts "Cleaning up security group: #{sg.name}" if debug_level
+          debug "Cleaning up security group: #{sg.name}"
           destroy_security_group!(sg) if sg
         end
       end
