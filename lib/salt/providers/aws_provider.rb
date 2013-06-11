@@ -81,7 +81,7 @@ module Salt
       ## List of the vm objects
       def list
         @list ||= raw_list.map do |vm|
-          if vm.tags['name'].index(environment)
+          if vm.tags && vm.tags['name'] && vm.tags['name'].index(environment)
             Machine.new({
               state: vm.state.to_sym,
               name: vm.tags["name"],
