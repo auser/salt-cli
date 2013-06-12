@@ -2,9 +2,22 @@
 
 Opinionated salt-stack deployment
 
+## Dependencies
+
+* rvm
+* ruby 1.9.3
+* rubygems
+* bundler gem
+    
+
 ## Installation
 
-    $ gem install salt
+    $ git clone git@github.com:auser/salt-cli.git
+    $ cd salt-cli
+    $ bundler install
+    $ gem build salt-cli.gemspec
+    $ gem install salt-cli
+    $ salt #should now show a list of salt-cli commands
 
 ## Usage
 
