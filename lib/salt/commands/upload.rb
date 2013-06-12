@@ -4,8 +4,8 @@ module Salt
       def run(args=[])
         require_master_server!
         vm = find name
-        localpath   = local || "#{File.join(Dir.pwd, "deploy", "salt")}/"
-        remotepath  = remote || "/srv/salt"
+        localpath   = local || "#{File.join(Dir.pwd, "deploy")}/"
+        remotepath  = remote || "/srv"
         dsystem sudo_cmd(vm, "sudo mkdir -p #{remotepath} && sudo chown #{vm.user} #{remotepath}")
         dsystem rsync_cmd(vm, localpath, remotepath)
         salt_cmd vm, 'saltutil.sync_all' if sync

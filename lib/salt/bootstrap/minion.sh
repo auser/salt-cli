@@ -47,10 +47,10 @@ sudo /etc/init.d/salt-minion restart
 echo "------> The minion is booted and waiting for approval
 Log in to the master machine and accept the key"
 
-echo """
+echo "
 index: $INDEX
 roles:
-""" > /etc/salt/grains
+" > /etc/salt/grains
 echo $ROLES | sed -n 1'p' | tr ',' '\n' | while read word; do
   echo "  - $word" >> /etc/salt/grains
 done

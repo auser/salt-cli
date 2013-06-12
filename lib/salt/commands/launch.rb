@@ -72,6 +72,9 @@ module Salt
           Salt::Commands::Role.new(provider, config.merge(name: n, debug: debug_level, roles: roles.join(','))).run([])
           5.times {|i| print "."; sleep 1; }
         end
+        
+        ## Run mine.update ALWAYS
+        salt_cmd find(n), 'mine.update'
       end
       
       def run_after_launch(n=name)

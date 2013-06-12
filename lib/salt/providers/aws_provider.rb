@@ -9,7 +9,7 @@ module Salt
       
       # Launch
       def launch(vm, opts={})
-        create_security_group! unless security_group
+        security_group = create_security_group! unless security_group
         security_group.reload if security_group
         %w(tcp udp).each do |proto|
           security_group.revoke_port_range(1..65535, ip_protocol: proto) rescue nil
