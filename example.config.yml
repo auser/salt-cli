@@ -1,6 +1,0 @@
-aws:
-  id:
-  secret_key:
-vagrant:
-  key: ~/.vagrant.d/insecure_private_key
-  user: vagrant
