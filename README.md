@@ -14,7 +14,7 @@ Opinionated salt-stack deployment
 
     $ git clone git@github.com:auser/salt-cli.git
     $ cd salt-cli
-    $ bundler install
+    $ bundle install
     $ gem build salt-cli.gemspec
     $ gem install salt-cli
     $ salt #should now show a list of salt-cli commands
