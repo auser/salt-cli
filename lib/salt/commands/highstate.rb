@@ -7,8 +7,15 @@ module Salt
         vm = find name
         salt_cmd vm, 'saltutil.sync_all'
         salt_cmd vm, 'mine.update'
-        salt_cmd vm, "state.highstate"
+        opts = {}
+        opts.merge!({'b' => batch_size}) if batch_size
+        salt_cmd vm, "state.highstate", opts
       end
+      
+      def self.additional_options(x)
+        x.on("-b", "--batch <size>", "Batch size can be a number or percentage") {|n| config[:batch_size] = n}
+      end
+      
     end
   end
 end

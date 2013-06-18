@@ -207,6 +207,10 @@ module Salt
         @list = @security_group = @compute = nil
       end
       
+      def aws
+        config[:aws] || {}
+      end
+      
       def aws_access_key_id
         ENV["AWS_ACCESS_KEY"] || aws[:access_key]
       end
