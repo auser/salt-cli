@@ -197,11 +197,21 @@ module Salt
       def machine_config
         @machine_config ||= config[:aws][:machines] || {}
       end
+      
+      ## Build a compute object in fog
       def compute
-        Fog.credential = aws[:keyname] if aws.has_key?(:keyname)
         @compute ||= Fog::Compute.new({provider: "AWS",
                                       aws_access_key_id: aws_access_key_id,
                                       aws_secret_access_key: aws_secret_access_key})
+        if aws.has_key?(:keyname)
+          # aws[:keyname]
+          Fog.credentials = Fog.credentials.merge({
+              private_key_path: build_keypath, 
+              public_key_path: "#{build_keypath}.pub"
+          })
+          @compute.import_key_pair(aws[:keyname], IO.read("#{build_keypath}.pub")) if @compute.key_pairs.get(aws[:keyname]).nil?
+        end
+        @compute
       end
       def reset!
         @list = @security_group = @compute = nil
