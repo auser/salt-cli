@@ -4,7 +4,7 @@ module Salt
   module Commands
     class List < BaseCommand
       def run(args=[])
-        cmd = all ? :list : :running_list
+        cmd = config[:all] ? :list : :running_list
         provider.send(cmd).each do |m|
           puts machine_string(m)
         end

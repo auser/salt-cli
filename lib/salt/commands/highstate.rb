@@ -8,7 +8,7 @@ module Salt
         salt_cmd vm, 'saltutil.sync_all'
         salt_cmd vm, 'mine.update'
         opts = {}
-        opts.merge!({'b' => batch_size}) if batch_size
+        opts.merge!({'b' => config[:batch_size]}) if config[:batch_size]
         salt_cmd vm, "state.highstate", opts
       end
       

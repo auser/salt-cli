@@ -3,10 +3,12 @@ module Salt
     class Bootstrap < BaseCommand
 
       def run(args=[])
-        vm = find name
-        bname = name == "#{environment}-master" ? "master" : "minion"
-        localpath = File.join(Salt.bootstrap_dir, "#{bname}.sh")
-        remotepath = "/tmp/#{bname}.sh"
+        vm = find config[:name]
+        bootstrap_name = config[:name] == "#{config[:environment]}-master" ? "master" : "minion"
+        localpath = File.join(Salt.bootstrap_dir, "#{bootstrap_name}.sh")
+        remotepath = "/tmp/#{bootstrap_name}.sh"
+        
+        p [:vm, vm]
         system rsync_cmd(vm, localpath, remotepath)
         
         index = provider.running_list.size
@@ -14,7 +16,7 @@ module Salt
         if name == "#{environment}-master" 
           cmd = "sudo /bin/sh #{remotepath} #{provider.to_s} #{environment}"
         else
-          rs = roles ? roles.join(",") : ""
+          rs = config[:roles] ? config[:roles].join(",") : ""
           cmd = "sudo /bin/sh #{remotepath} #{provider.to_s} #{name} #{master_server.preferred_ip} #{environment} #{index} #{rs}"
         end
         

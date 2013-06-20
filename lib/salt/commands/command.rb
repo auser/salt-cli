@@ -5,7 +5,7 @@ module Salt
       def run(args=[])
         require_master_server!
         vm = find name
-        puts salt_cmd vm, "#{command}"
+        puts salt_cmd vm, "#{config[:command]}"
       end
 
       def self.additional_options(x)

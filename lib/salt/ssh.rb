@@ -2,7 +2,7 @@ module Salt
   module SSH
     
     def salt_cmd(vm, cmd, opts={})
-      salt_cmd = (vm.name.to_s == "#{environment}-master") ? "salt '#{pattern}'" : "salt-call"
+      salt_cmd = (vm.name.to_s == "#{environment}-master") ? "salt '#{config[:pattern]}'" : "salt-call"
       cmd = sudo_cmd(vm, [salt_cmd, compile_opts(opts), cmd].join(" "))
       dsystem(cmd)
     end

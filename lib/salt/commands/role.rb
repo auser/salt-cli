@@ -3,14 +3,14 @@ module Salt
     class Role < BaseCommand
 
       def run(args=[])        
-        return list_roles if list || list_available_roles
+        return list_roles if config[:list] || config[:list_available_roles]
         require_master_server!
-        raise "No roles given. Please pass roles to set" unless roles
+        raise "No roles given. Please pass roles to set" unless config[:roles]
         vm = find name
         cmds = [
           "sudo restart salt-minion",
           "sleep 5",
-          "sudo salt-call grains.setval roles \"[#{roles}]\""
+          "sudo salt-call grains.setval roles \"[#{config[:roles]}]\""
         ]
         dsystem sudo_cmd(vm, cmds.join(" && "))
       end

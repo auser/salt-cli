@@ -4,18 +4,22 @@ module Salt
   module Commands
     class Teardown < BaseCommand
       def run(args=[])
-        if all
+        if config[:all]
           teardown_all!
-          cleanup! if cleanup
+          cleanup! if config[:cleanup]
         else
           teardown_single!(name)
         end
       end
       
       def teardown_all!
+        threads = []
         provider.running_list.each do |m|
-          teardown_single! m.name unless m.name == "#{environment}-master"
+          threads << Thread.new do
+            teardown_single! m.name unless m.name == "#{environment}-master"
+          end
         end
+        threads.each{|t| t.join }
         teardown_single!("#{environment}-master")
       end
       
@@ -23,15 +27,16 @@ module Salt
         vm = find name
         if vm
           if vm.state == :running
-            unless force_yes
+            unless config[:force_yes]
               require_confirmation! <<-EOE
               Are you sure you want to teardown the machine #{name}.
               This <%= color('cannot', RED) %> be undone
               EOE
             end
             provider.teardown(vm)
-            if name != "#{environment}-master"
-              Salt::Commands::Key.new(provider, config.merge(delete: true, name: name)).run([])
+            if name != "#{environment}-master" && !master_server.nil?
+              provider.update_config!(delete: true, name: name)
+              Salt::Commands::Key.new(provider).run([])
             end
           else
             puts "Machine not found or not running: #{name}"

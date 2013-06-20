@@ -55,23 +55,23 @@ If you have a salt-config.yml at the current working directory, salt-cli will re
     plans:
       dev:
         # In order
-        - master:
-            roles:
-              - master
-        - monitor:
-            roles:
-              - monitor
-        - hadoop1:
-            roles:
-              - hadoop_master
-              - hbase_master
-              - zookeeper
-              - elasticsearch
-              - hbase_slave
-        - hadoop2:
-            roles:
-              - hbase_slave
-              - zookeeper
+        master:
+          roles:
+            - master
+        monitor:
+          roles:
+            - monitor
+        hadoop1:
+          roles:
+            - hadoop_master
+            - hbase_master
+            - zookeeper
+            - elasticsearch
+            - hbase_slave
+        hadoop2:
+          roles:
+            - hbase_slave
+            - zookeeper
     aws:
       access_key: [ACCESS_KEY]
       secret_key: [SECRET_KEY]

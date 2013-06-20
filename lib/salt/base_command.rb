@@ -5,15 +5,16 @@ require 'salt/debug'
 
 module Salt
   # Base command
-  class BaseCommand < OpenStruct
+  class BaseCommand# < OpenStruct
     include SSH
     include Debug
-    attr_reader :config, :provider
+    attr_reader :config, :provider, :provider, :environment
     
-    def initialize(provider, opts={})
+    def initialize(provider)
       @provider = provider
-      @config = opts
-      super(opts)
+      @config = provider.config
+      @name = config[:name] if config.has_key?(:name)
+      @environment = config[:environment] if config.has_key?(:environment)
     end
 
     def run(args, opts={})
@@ -65,9 +66,9 @@ module Salt
       config.recursive_symbolize_keys!
       
       config[:provider_name] = provider
-      config[:name] = generate_name(config)
+      # config[:name] = generate_name(config)
       provider = Salt.get_provider(provider).new(config) if provider.is_a?(String)
-      inst = new(provider, config)
+      inst = new(provider)
       inst.run(args) if inst.validate_run!
     end
     
@@ -77,12 +78,21 @@ module Salt
       "#{env}-#{name}"
     end
     
+    def machine_name
+      p [:machine_name, config[:name]]
+      @machine_name ||= self.class.generate_name(config)
+    end
+    
     def validate_run!
       errors.length == 0
     end
     
     def errors
       @errors ||= {}
+    end
+    
+    def reset!
+      provider.reset!
     end
     
     def self.get_provider(provider_name)
@@ -130,3 +140,4 @@ require 'salt/commands/run'
 require 'salt/commands/upload'
 require 'salt/commands/upgrade'
 require 'salt/commands/highstate'
+require 'salt/commands/overstate'

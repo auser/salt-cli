@@ -1,13 +1,12 @@
 require "salt/machine"
 
 module Salt
-  class BaseProvider < OpenStruct
+  class BaseProvider# < OpenStruct
     
     attr_reader :config
     
     def initialize(opts={})
       @config = opts
-      super(opts)
     end
     
     #### PUBLIC METHODS
@@ -29,7 +28,11 @@ module Salt
     end
     
     def set_name(new_name)
-      config[:name] = self.name = new_name
+      config[:name] = new_name
+    end
+    
+    def update_config!(opts={})
+      config.merge!(opts)
     end
     
     def reset!

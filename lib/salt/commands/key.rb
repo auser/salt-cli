@@ -6,16 +6,16 @@ module Salt
         require_master_server!
         
         vm = find name
-        if !delete && current_accepted_keys.include?(name) && !force
+        if !config[:delete] && current_accepted_keys.include?(name) && !config[:force]
           puts "Already accepted..."
         else
-          if force && current_accepted_keys.include?(name)
+          if config[:force] && current_accepted_keys.include?(name)
             delete_key!(vm)
           end
           
-          if delete
+          if config[:delete]
             delete_key!(vm)
-          elsif list
+          elsif config[:list]
             list_keys!
           else
             add_key!(vm)

@@ -45,16 +45,19 @@ module Salt
           username: 'ubuntu',
           private_key_path: build_keypath,
           public_key_path: "#{build_keypath}.pub",
-          tags: {name: name, environment: environment},
+          tags: {name: machine_name, environment: config[:environment]},
           groups: [security_group.name],
           flavor_id: flavor_id,
           image_id: image_id
         }
         opts.merge!(key_name: aws[:keyname]) if aws[:keyname]
-        pp opts
-        compute.servers.bootstrap(opts)
-        reset!
+        puts "Launching #{config[:name]} (#{machine_name})"
+        p compute.servers.bootstrap(opts)
         ## Need to support private ips on ec2
+      end
+      
+      def machine_name
+        "#{config[:name] || 'master'}-#{config[:environment] || 'development'}"
       end
       
       def teardown(vm)
@@ -74,18 +77,19 @@ module Salt
       ## Find a vm named
       def find(name)
         list.select do |vm|
-          vm.name.to_s.index(name.to_s) && vm.running?
+          p [:vm, vm.name, config[:name]] if vm.running?
+          vm.name.to_s.index(config[:name].to_s) && vm.running?
         end.first
       end
       
       ## List of the vm objects
       def list
         @list ||= raw_list.map do |vm|
-          if vm.tags && vm.tags['name'] && vm.tags['name'].index(environment)
+          if vm.tags && vm.tags['name'] && vm.tags['name'].index(config[:environment])
             Machine.new({
               state: vm.state.to_sym,
               name: vm.tags["name"],
-              user: user,
+              user: config[:user],
               dns: vm.dns_name,
               public_ip: vm.public_ip_address,
               private_ip: vm.private_ip_address,
@@ -106,10 +110,10 @@ module Salt
         compute.servers
       end
       def security_group
-        @security_group ||= compute.security_groups.get("#{name}-#{aws[:keyname]}")
+        @security_group ||= compute.security_groups.get("#{config[:name]}-#{aws[:keyname]}")
       end
       def all_other_security_groups
-        all_security_groups.reject {|sg| name.to_s.index(sg.name) }
+        all_security_groups.reject {|sg| config[:name].to_s.index(sg.name) }
       end
       def all_security_groups(only_running=true)
         (only_running ? running_list : list).map do |vm|
@@ -133,15 +137,15 @@ module Salt
       end
       #### TCP
       def create_security_group!(&block)
-        sg_name = "#{name}-#{aws[:keyname]}"
+        sg_name = "#{config[:name]}-#{aws[:keyname]}"
         debug "Creating security group #{sg_name}"
         group = compute.security_groups.new({name: sg_name,
-                                    description: "#{name} group for #{aws[:keyname]}"})
+                                    description: "#{config[:name]} group for #{aws[:keyname]}"})
         group.save rescue nil
         group
       end
       def destroy_security_group!(security_group)
-        sg = compute.security_groups.get(security_group.name)
+        sg = compute.security_groups.get(security_group.name) rescue nil
       	unless sg.nil? || sg.name == "default"
       		sg.ip_permissions.each do |permission|
       			opts = {}
@@ -185,7 +189,7 @@ module Salt
         all_ports
       end
       def real_name
-        name.split('-')[-1].to_sym
+        config[:name].split('-')[-1].to_sym
       end
       def machine_config_or_default(field)
         if machine_config[real_name] && machine_config[real_name].has_key?(field)
