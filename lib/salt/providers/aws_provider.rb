@@ -50,7 +50,7 @@ module Salt
           flavor_id: flavor_id,
           image_id: image_id
         }
-        
+        opts.merge!(key_name: aws[:keyname]) if aws[:keyname]
         pp opts
         compute.servers.bootstrap(opts)
         reset!
